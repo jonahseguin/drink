@@ -113,6 +113,9 @@ public class DrinkCommandService implements CommandService {
             try {
                 // TODO: run async if command.requiresAsync
                 Object[] parsedArguments = argumentParser.parseArguments(execution, command, commandArgs);
+                if (!execution.isCanExecute()) {
+                    return;
+                }
                 try {
                     command.getMethod().invoke(command.getHandler(), parsedArguments);
                 } catch (IllegalAccessException | InvocationTargetException ex) {
