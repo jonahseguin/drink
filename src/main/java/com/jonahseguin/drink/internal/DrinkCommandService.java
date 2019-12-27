@@ -161,6 +161,7 @@ public class DrinkCommandService implements CommandService {
         return name.toLowerCase();
     }
 
+    @Override
     public <T> DrinkBinder<T> bind(@Nonnull Class<T> type) {
         Preconditions.checkNotNull(type, "Type cannot be null for bind");
         return new DrinkBinder<>(this, type);

@@ -31,10 +31,17 @@ public class DrinkBinder<T> {
     public void toInstance(@Nonnull T instance) {
         Preconditions.checkNotNull(instance, "Instance cannot be null for toInstance during binding for " + type.getSimpleName());
         this.provider = new InstanceProvider<>(instance);
+        finish();
+    }
+
+    public void toProvider(@Nonnull DrinkProvider<T> provider) {
+        Preconditions.checkNotNull(provider, "Provider cannot be null for toProvider during binding for " + type.getSimpleName());
+        this.provider = provider;
+        finish();
     }
 
     private void finish() {
-
+        commandService.bindProvider(type, classifiers, provider);
     }
 
 }
