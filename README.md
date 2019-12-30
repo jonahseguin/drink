@@ -54,9 +54,48 @@ public class ExampleCommand {
     // So when we use /example, it will execute this.
     // A default command is optional.
     @Command(name = "", aliases = {}, desc = "An example command.", usage = "")
+    @Require("example.use")
     public void exampleRoot(@Sender CommandSender sender) {
         sender.sendMessage("You used the example command!");
     }
+    
+    // Easy argument parsing
+    
+    @Command(name = "name", desc = "Set a player's display name.", usage = "<player> <name>")
+    public void setName(@Sender CommandSender sender, Player target, String name) {
+        target.setDisplayName(name);
+    }
+    
+    // Text
+    
+    @Command(name = "msg", desc = "Send a message to a player.", usage = "<player> <message..>")
+    public void msg(@Sender CommandSender sender, Player target, @Text String message) {
+        target.sendMessage("Message from " + sender.getName() + ": " + message);
+    }
+    
+    // Optional arguments
+    
+    @Command(name = "setlevel", desc = "Set your XP level.") // usage will be auto-generated to look like: [level = 1]
+    @Require("example.setlevel")
+    public void setLevel(@Sender Player player, @Optional("1") int level) {
+        player.setLevel(level);
+    }
+    
+    // Flags
+    
+    @Command(name = "flagb", desc = "Test boolean flag.", usage = "[-f: flag]")
+    public void flagBoolean(@Sender CommandSender sender, @Flag('f') boolean flag) {
+        sender.sendMessage("flag: " + (flag ? "true" : "false"));
+    }
+
+    @Command(name = "flago", desc = "Test object flag.", usage = "[-t: player]")
+    public void flagObject(@Sender Player sender, @Flag('t') Player target) {
+        if (target == null) {
+            target = sender;
+        }
+        sender.sendMessage("Target: " + target.getName());
+    }
+    
 }
 ```
 
