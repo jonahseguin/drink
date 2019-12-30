@@ -30,6 +30,17 @@ public class PlayerProvider extends DrinkProvider<Player> {
         return false;
     }
 
+    @Override
+    public boolean allowNullArgument() {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public Player defaultNullValue() {
+        return null;
+    }
+
     @Nullable
     @Override
     public Player provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
