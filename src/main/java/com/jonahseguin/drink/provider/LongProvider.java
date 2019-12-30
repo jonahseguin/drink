@@ -6,15 +6,14 @@ import com.jonahseguin.drink.parametric.DrinkProvider;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class StringProvider extends DrinkProvider<String> {
+public class LongProvider extends DrinkProvider<Long> {
 
     @Override
     public boolean doesConsumeArgument() {
-        return true;
+        return false;
     }
 
     @Override
@@ -23,17 +22,24 @@ public class StringProvider extends DrinkProvider<String> {
     }
 
     @Override
-    public Optional<String> provide(@Nonnull CommandArgs args, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
-        return Optional.of(args.next());
+    public Optional<Long> provide(@Nonnull CommandArgs args, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
+        String s = args.next();
+        try {
+            Long i = Long.parseLong(s);
+            return Optional.of(i);
+        }
+        catch (NumberFormatException ex) {
+            throw new CommandExitMessage("Required: Long Number, Given: '" + s + "'");
+        }
     }
 
     @Override
     public String argumentDescription() {
-        return "string";
+        return null;
     }
 
     @Override
     public List<String> getSuggestions(@Nonnull String prefix) {
-        return Collections.emptyList();
+        return null;
     }
 }

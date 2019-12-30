@@ -2,6 +2,7 @@ package com.jonahseguin.drink.command;
 
 import com.jonahseguin.drink.exception.MissingProviderException;
 import com.jonahseguin.drink.internal.DrinkCommandService;
+import com.jonahseguin.drink.parametric.CommandParameter;
 import com.jonahseguin.drink.parametric.CommandParameters;
 import com.jonahseguin.drink.parametric.DrinkProvider;
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class DrinkCommand {
     private final DrinkProvider<?>[] consumingProviders;
     private final int consumingArgCount;
     private final boolean requiresAsync;
+    private final String generatedUsage;
 
     public DrinkCommand(DrinkCommandService commandService, String name, Set<String> aliases, String description, String usage, String permission, Object handler, Method method) throws MissingProviderException {
         this.commandService = commandService;
@@ -40,6 +42,25 @@ public class DrinkCommand {
         this.consumingArgCount = calculateConsumingArgCount();
         this.consumingProviders = calculateConsumingProviders();
         this.requiresAsync = calculateRequiresAsync();
+        this.generatedUsage = generateUsage();
+    }
+
+    private String generateUsage() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < parameters.getParameters().length; i++) {
+            CommandParameter parameter = parameters.getParameters()[i];
+            DrinkProvider provider = providers[i];
+            if (provider.doesConsumeArgument()) {
+                if (parameter.isOptional()) {
+                    sb.append("[").append(provider.argumentDescription()).append(" = ").append(parameter.getDefaultOptionalValue()).append("]");
+                }
+                else {
+                    sb.append("<").append(provider.argumentDescription()).append(">");
+                }
+                sb.append(" ");
+            }
+        }
+        return sb.toString();
     }
 
     private boolean calculateRequiresAsync() {
