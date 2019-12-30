@@ -12,6 +12,8 @@ import java.util.Optional;
 
 public class StringProvider extends DrinkProvider<String> {
 
+    public static final StringProvider INSTANCE = new StringProvider();
+
     @Override
     public boolean doesConsumeArgument() {
         return true;

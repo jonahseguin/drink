@@ -23,8 +23,16 @@ public class DrinkBinding<T> {
     public boolean canProvideFor(@Nonnull CommandParameter parameter) {
         Preconditions.checkNotNull(parameter, "Parameter cannot be null");
         // The parameter and binding need to have exact same annotations
-        for (Annotation annotation : parameter.getClassifierAnnotations()) {
-            if (!annotations.contains(annotation.annotationType())) {
+        parameter.getClassifierAnnotations().forEach(c -> System.out.println("Classifier annotation present for param " + parameter.getParameter().getName() + ": " + c.annotationType().getSimpleName()));
+        for (Annotation c : parameter.getClassifierAnnotations()) {
+            System.out.println("Annotation present for param " + parameter.getParameter().getName() + ": " + c.annotationType().getSimpleName());
+            if (!annotations.contains(c.annotationType())) {
+                return false;
+            }
+        }
+        for (Class<? extends Annotation> annotation : annotations) {
+            System.out.println("canProvideFor provider " + provider.getClass().getSimpleName() + " required classifier: " + annotation.getSimpleName() + " for param: " + parameter.getParameter().getName());
+            if (parameter.getClassifierAnnotations().stream().noneMatch(a -> a.annotationType().equals(annotation))) {
                 return false;
             }
         }

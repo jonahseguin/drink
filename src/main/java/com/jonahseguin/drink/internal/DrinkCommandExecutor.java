@@ -25,16 +25,30 @@ public class DrinkCommandExecutor implements CommandExecutor {
             try {
                 Map.Entry<DrinkCommand, String[]> data = container.getCommand(args);
                 if (data != null && data.getKey() != null) {
+                    if (args.length > 0) {
+                        if (args[args.length - 1].equalsIgnoreCase("help") && !data.getKey().getName().equalsIgnoreCase("help")) {
+                            // Send help if they ask for it, if they registered a custom help sub-command, allow that to override our help menu
+                            commandService.getHelpService().sendHelpFor(sender, container);
+                            return true;
+                        }
+                    }
+                    System.out.println("Executing command /" + container.getName() + " " + data.getKey().getName() + " via method " + data.getKey().getMethod().getName());
                     commandService.executeCommand(sender, data.getKey(), data.getValue());
                 } else {
                     if (args.length > 0) {
-                        if (args[0].equalsIgnoreCase("help")) {
+                        if (args[args.length - 1].equalsIgnoreCase("help")) {
+                            // Send help if they ask for it, if they registered a custom help sub-command, allow that to override our help menu
                             commandService.getHelpService().sendHelpFor(sender, container);
-                        } else {
-                            sender.sendMessage(ChatColor.RED + "Unknown sub-command: " + args[0] + ".  Use '/" + label + " help' for available commands.");
+                            return true;
                         }
+                        sender.sendMessage(ChatColor.RED + "Unknown sub-command: " + args[0] + ".  Use '/" + label + " help' for available commands.");
                     } else {
-                        sender.sendMessage(ChatColor.RED + "Please choose a sub-command.  Use '/" + label + " help' for available commands.");
+                        if (container.isDefaultCommandIsHelp()) {
+                            commandService.getHelpService().sendHelpFor(sender, container);
+                        }
+                        else {
+                            sender.sendMessage(ChatColor.RED + "Please choose a sub-command.  Use '/" + label + " help' for available commands.");
+                        }
                     }
                 }
                 return true;

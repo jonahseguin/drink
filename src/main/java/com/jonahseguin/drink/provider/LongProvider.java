@@ -6,14 +6,17 @@ import com.jonahseguin.drink.parametric.DrinkProvider;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 public class LongProvider extends DrinkProvider<Long> {
 
+    public static final LongProvider INSTANCE = new LongProvider();
+
     @Override
     public boolean doesConsumeArgument() {
-        return false;
+        return true;
     }
 
     @Override
@@ -35,11 +38,11 @@ public class LongProvider extends DrinkProvider<Long> {
 
     @Override
     public String argumentDescription() {
-        return null;
+        return "long number";
     }
 
     @Override
     public List<String> getSuggestions(@Nonnull String prefix) {
-        return null;
+        return Collections.emptyList();
     }
 }

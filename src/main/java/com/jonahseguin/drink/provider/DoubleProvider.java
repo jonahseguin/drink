@@ -6,14 +6,17 @@ import com.jonahseguin.drink.parametric.DrinkProvider;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 public class DoubleProvider extends DrinkProvider<Double> {
 
+    public static final DoubleProvider INSTANCE = new DoubleProvider();
+
     @Override
     public boolean doesConsumeArgument() {
-        return false;
+        return true;
     }
 
     @Override
@@ -35,11 +38,11 @@ public class DoubleProvider extends DrinkProvider<Double> {
 
     @Override
     public String argumentDescription() {
-        return null;
+        return "decimal number";
     }
 
     @Override
     public List<String> getSuggestions(@Nonnull String prefix) {
-        return null;
+        return Collections.emptyList();
     }
 }

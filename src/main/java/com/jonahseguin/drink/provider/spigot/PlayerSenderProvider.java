@@ -1,8 +1,9 @@
-package com.jonahseguin.drink.provider;
+package com.jonahseguin.drink.provider.spigot;
 
 import com.jonahseguin.drink.command.CommandArgs;
 import com.jonahseguin.drink.exception.CommandExitMessage;
 import com.jonahseguin.drink.parametric.DrinkProvider;
+import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
@@ -10,13 +11,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class InstanceProvider<T> extends DrinkProvider<T> {
+public class PlayerSenderProvider extends DrinkProvider<Player> {
 
-    private final T instance;
-
-    public InstanceProvider(T instance) {
-        this.instance = instance;
-    }
+    public static final PlayerSenderProvider INSTANCE = new PlayerSenderProvider();
 
     @Override
     public boolean doesConsumeArgument() {
@@ -29,13 +26,16 @@ public class InstanceProvider<T> extends DrinkProvider<T> {
     }
 
     @Override
-    public Optional<T> provide(@Nonnull CommandArgs args, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
-        return Optional.of(instance);
+    public Optional<Player> provide(@Nonnull CommandArgs args, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
+        if (args.isSenderPlayer()) {
+            return Optional.of(args.getSenderAsPlayer());
+        }
+        throw new CommandExitMessage("This is a player-only command.");
     }
 
     @Override
     public String argumentDescription() {
-        return instance.getClass().getSimpleName() + " (provided)";
+        return "player sender";
     }
 
     @Override

@@ -24,9 +24,14 @@ public class CommandExtractor {
 
     public Map<String, DrinkCommand> extractCommands(@Nonnull Object handler) throws MissingProviderException {
         Preconditions.checkNotNull(handler, "Handler object cannot be null");
-        Map<String, DrinkCommand> commands = new HashMap<>();
-        for (Method method : handler.getClass().getMethods()) {
-            extractCommand(handler, method).ifPresent(drinkCommand -> commands.putIfAbsent(commandService.getCommandKey(drinkCommand.getName()), drinkCommand));
+        final Map<String, DrinkCommand> commands = new HashMap<>();
+        for (Method method : handler.getClass().getDeclaredMethods()) {
+            Optional<DrinkCommand> o = extractCommand(handler, method);
+            if (o.isPresent()) {
+                DrinkCommand drinkCommand = o.get();
+                commands.put(commandService.getCommandKey(drinkCommand.getName()), drinkCommand);
+                System.out.println("[Drink] Extracted command '" + drinkCommand.getName() + "' from method " + method.getName() + " from class '" + handler.getClass().getSimpleName() + "'");
+            }
         }
         return commands;
     }

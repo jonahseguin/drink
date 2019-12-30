@@ -15,9 +15,4 @@ public class Drink {
         return services.computeIfAbsent(javaPlugin.getName(), name -> new DrinkCommandService(javaPlugin));
     }
 
-    public void example() {
-        JavaPlugin myPlugin = null; // usually you'd just use a `this` reference to your main class
-        CommandService commandService = Drink.get(myPlugin);
-    }
-
 }

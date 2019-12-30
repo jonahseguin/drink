@@ -28,6 +28,7 @@ public class ProviderAssigner {
                 }
                 if (provider != null) {
                     providers[i] = provider;
+                    System.out.println("Assigned provider " + provider.getClass().getSimpleName() + " for argument [" + i + "] for command method " + drinkCommand.getMethod().getName());
                 }
                 else {
                     throw new MissingProviderException("No provider bound for " + param.getType().getSimpleName() + " for parameter " + i + " for method " + drinkCommand.getMethod().getName());

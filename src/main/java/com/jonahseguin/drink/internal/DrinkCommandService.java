@@ -2,32 +2,37 @@ package com.jonahseguin.drink.internal;
 
 import com.google.common.base.Preconditions;
 import com.jonahseguin.drink.CommandService;
+import com.jonahseguin.drink.annotation.Sender;
 import com.jonahseguin.drink.command.*;
 import com.jonahseguin.drink.exception.*;
 import com.jonahseguin.drink.modifier.ModifierService;
 import com.jonahseguin.drink.parametric.*;
 import com.jonahseguin.drink.parametric.binder.DrinkBinder;
+import com.jonahseguin.drink.provider.*;
+import com.jonahseguin.drink.provider.spigot.CommandSenderProvider;
+import com.jonahseguin.drink.provider.spigot.PlayerProvider;
+import com.jonahseguin.drink.provider.spigot.PlayerSenderProvider;
 import lombok.Getter;
 import org.apache.logging.log4j.util.Strings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Getter
 public class DrinkCommandService implements CommandService {
 
-    public static String DEFAULT_KEY = "";
+    public static String DEFAULT_KEY = "DRINK_DEFAULT";
 
     private final JavaPlugin plugin;
     private final CommandExtractor extractor;
@@ -36,6 +41,7 @@ public class DrinkCommandService implements CommandService {
     private final ArgumentParser argumentParser;
     private final ModifierService modifierService;
     private final DrinkSpigotRegistry spigotRegistry;
+    private final ExecutorService executor = Executors.newCachedThreadPool();
     private DrinkAuthorizer authorizer;
 
     private final ConcurrentMap<String, DrinkCommandContainer> commands = new ConcurrentHashMap<>();
@@ -50,6 +56,24 @@ public class DrinkCommandService implements CommandService {
         this.modifierService = new ModifierService(this);
         this.spigotRegistry = new DrinkSpigotRegistry(this);
         this.authorizer = new DrinkAuthorizer();
+
+        this.bindDefaults();
+    }
+
+    private void bindDefaults() {
+        bind(Boolean.class).toProvider(BooleanProvider.INSTANCE);
+        bind(boolean.class).toProvider(BooleanProvider.INSTANCE);
+        bind(Double.class).toProvider(DoubleProvider.INSTANCE);
+        bind(double.class).toProvider(DoubleProvider.INSTANCE);
+        bind(Integer.class).toProvider(IntegerProvider.INSTANCE);
+        bind(int.class).toProvider(IntegerProvider.INSTANCE);
+        bind(Long.class).toProvider(LongProvider.INSTANCE);
+        bind(long.class).toProvider(LongProvider.INSTANCE);
+        bind(String.class).toProvider(StringProvider.INSTANCE);
+
+        bind(CommandSender.class).annotatedWith(Sender.class).toProvider(CommandSenderProvider.INSTANCE);
+        bind(Player.class).annotatedWith(Sender.class).toProvider(PlayerSenderProvider.INSTANCE);
+        bind(Player.class).toProvider(new PlayerProvider(plugin));
     }
 
     @Override
@@ -60,23 +84,25 @@ public class DrinkCommandService implements CommandService {
 
     @Override
     public void registerCommands() {
-        commands.values().forEach(spigotRegistry::register);
+        commands.values().forEach(cmd -> {
+            spigotRegistry.register(cmd, cmd.isOverrideExistingCommands());
+        });
     }
 
     @Override
     public DrinkCommandContainer register(@Nonnull Object handler, @Nonnull String name, @Nullable String... aliases) throws CommandRegistrationException {
         Preconditions.checkNotNull(handler, "Handler object cannot be null");
         Preconditions.checkNotNull(name, "Name cannot be null");
+        Preconditions.checkState(name.length() > 0, "Name cannot be empty (must be > 0 characters in length)");
         Set<String> aliasesSet = new HashSet<>();
         if (aliases != null) {
-            for (String s : aliases) {
-                aliasesSet.add(s);
-            }
+            aliasesSet.addAll(Arrays.asList(aliases));
+            aliasesSet.removeIf(s -> s.length() == 0);
         }
         try {
             Map<String, DrinkCommand> extractCommands = extractor.extractCommands(handler);
-            if (commands.isEmpty()) {
-                throw new CommandRegistrationException("There were no commands to register in the " + handler.getClass().getSimpleName() + " class");
+            if (extractCommands.isEmpty()) {
+                throw new CommandRegistrationException("There were no commands to register in the " + handler.getClass().getSimpleName() + " class (" + extractCommands.size() + ")");
             }
             DrinkCommandContainer container = new DrinkCommandContainer(this, handler, name, aliasesSet, extractCommands);
             commands.put(getCommandKey(name), container);
@@ -107,28 +133,36 @@ public class DrinkCommandService implements CommandService {
         Preconditions.checkNotNull(sender, "Sender cannot be null");
         Preconditions.checkNotNull(command, "Command cannot be null");
         Preconditions.checkNotNull(args, "Args cannot be null");
+        if (authorizer.isAuthorized(sender, command)) {
+            if (command.isRequiresAsync()) {
+                executor.submit(() -> finishExecution(sender, command, args));
+            }
+            else {
+                finishExecution(sender, command, args);
+            }
+        }
+    }
+
+    private void finishExecution(@Nonnull CommandSender sender, @Nonnull DrinkCommand command, @Nonnull String[] args) {
         CommandArgs commandArgs = new CommandArgs(sender, Arrays.asList(args));
         CommandExecution execution = new CommandExecution(this, sender, args, commandArgs, command);
-        if (authorizer.isAuthorized(sender, command)) {
+        try {
+            Object[] parsedArguments = argumentParser.parseArguments(execution, command, commandArgs);
+            if (!execution.isCanExecute()) {
+                return;
+            }
             try {
-                // TODO: run async if command.requiresAsync
-                Object[] parsedArguments = argumentParser.parseArguments(execution, command, commandArgs);
-                if (!execution.isCanExecute()) {
-                    return;
-                }
-                try {
-                    command.getMethod().invoke(command.getHandler(), parsedArguments);
-                } catch (IllegalAccessException | InvocationTargetException ex) {
-                    sender.sendMessage(ChatColor.RED + "Could not perform command.  Notify an administrator");
-                    throw new DrinkException("Failed to execute command '" + command.getName() + "' with arguments '" + Strings.join(Arrays.asList(args), ' ') + " for sender " + sender.getName(), ex);
-                }
+                command.getMethod().invoke(command.getHandler(), parsedArguments);
+            } catch (IllegalAccessException | InvocationTargetException ex) {
+                sender.sendMessage(ChatColor.RED + "Could not perform command.  Notify an administrator");
+                throw new DrinkException("Failed to execute command '" + command.getName() + "' with arguments '" + Strings.join(Arrays.asList(args), ' ') + " for sender " + sender.getName(), ex);
             }
-            catch (CommandExitMessage ex) {
-                sender.sendMessage(ChatColor.RED + ex.getMessage());
-            } catch (CommandArgumentException ex) {
-                sender.sendMessage(ChatColor.RED + ex.getMessage());
-                helpService.sendUsageMessage(sender, getContainerFor(command), command);
-            }
+        }
+        catch (CommandExitMessage ex) {
+            sender.sendMessage(ChatColor.RED + ex.getMessage());
+        } catch (CommandArgumentException ex) {
+            sender.sendMessage(ChatColor.RED + ex.getMessage());
+            helpService.sendUsageMessage(sender, getContainerFor(command), command);
         }
     }
 
@@ -161,6 +195,9 @@ public class DrinkCommandService implements CommandService {
 
     public String getCommandKey(@Nonnull String name) {
         Preconditions.checkNotNull(name, "Name cannot be null");
+        if (name.length() == 0) {
+            return DEFAULT_KEY;
+        }
         return name.toLowerCase();
     }
 

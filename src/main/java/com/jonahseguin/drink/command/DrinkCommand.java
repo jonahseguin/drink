@@ -15,6 +15,7 @@ public class DrinkCommand {
 
     private final DrinkCommandService commandService;
     private final String name;
+    private final Set<String> allAliases;
     private final Set<String> aliases;
     private final String description;
     private final String usage;
@@ -43,6 +44,28 @@ public class DrinkCommand {
         this.consumingProviders = calculateConsumingProviders();
         this.requiresAsync = calculateRequiresAsync();
         this.generatedUsage = generateUsage();
+        this.allAliases = aliases;
+        if (name.length() > 0 && !name.equals(DrinkCommandService.DEFAULT_KEY)) {
+            allAliases.add(name);
+        }
+    }
+
+    public String getMostApplicableUsage() {
+        if (usage.length() > 0) {
+            return usage;
+        }
+        else {
+            return generatedUsage;
+        }
+    }
+
+    public String getShortDescription() {
+        if (description.length() > 24) {
+            return description.substring(0, 24) + "...";
+        }
+        else {
+            return description;
+        }
     }
 
     private String generateUsage() {

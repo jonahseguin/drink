@@ -16,7 +16,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-@Getter
 public class DrinkCommandContainer extends Command implements PluginIdentifiableCommand {
 
     private final DrinkCommandService commandService;
@@ -27,6 +26,8 @@ public class DrinkCommandContainer extends Command implements PluginIdentifiable
     private final DrinkCommand defaultCommand;
     private final DrinkCommandExecutor executor;
     private final DrinkTabCompleter tabCompleter;
+    private boolean overrideExistingCommands = true;
+    private boolean defaultCommandIsHelp = false;
 
     public DrinkCommandContainer(DrinkCommandService commandService, Object object, String name, Set<String> aliases, Map<String, DrinkCommand> commands) {
         super(name, "", "/" + name, new ArrayList<>(aliases));
@@ -38,16 +39,37 @@ public class DrinkCommandContainer extends Command implements PluginIdentifiable
         this.defaultCommand = calculateDefaultCommand();
         this.executor = new DrinkCommandExecutor(commandService, this);
         this.tabCompleter = new DrinkTabCompleter(commandService, this);
+        if (defaultCommand != null) {
+            setUsage("/" + name + " " + defaultCommand.getGeneratedUsage());
+            setDescription(defaultCommand.getDescription());
+            setPermission(defaultCommand.getPermission());
+        }
+    }
+
+    public List<String> getCommandSuggestions(@Nonnull String prefix) {
+        Preconditions.checkNotNull(prefix, "Prefix cannot be null");
+        final String p = prefix.toLowerCase();
+        List<String> suggestions = new ArrayList<>();
+        for (DrinkCommand c : commands.values()) {
+            for (String alias : c.getAllAliases()) {
+                if (alias.length() > 0) {
+                    if (p.length() == 0 || alias.toLowerCase().startsWith(p)) {
+                        suggestions.add(alias);
+                    }
+                }
+            }
+        }
+        return suggestions;
     }
 
     private DrinkCommand calculateDefaultCommand() {
         for (DrinkCommand dc : commands.values()) {
-            if (dc.getName().length() == 0) {
+            if (dc.getName().length() == 0 || dc.getName().equals(DrinkCommandService.DEFAULT_KEY)) {
                 // assume default!
                 return dc;
             }
         }
-        return commands.values().stream().findFirst().orElseThrow((Supplier<CommandRegistrationException>) () -> new CommandRegistrationException("No default command found for command " + name));
+        return null;
     }
 
     public DrinkCommand get(@Nonnull String name) {
@@ -61,7 +83,12 @@ public class DrinkCommandContainer extends Command implements PluginIdentifiable
             String s = args[i];
             String key = commandService.getCommandKey(s);
             if (commands.containsKey(key)) {
-                return new AbstractMap.SimpleEntry<>(commands.get(key), Arrays.copyOfRange(args, 1, args.length));
+                return new AbstractMap.SimpleEntry<>(commands.get(key), Arrays.copyOfRange(args, i + 1, args.length));
+            }
+            for (DrinkCommand drinkCommand : commands.values()) {
+                if (drinkCommand.getAliases().contains(key)) {
+                    return new AbstractMap.SimpleEntry<>(drinkCommand, Arrays.copyOfRange(args, i + 1, args.length));
+                }
             }
         }
         return new AbstractMap.SimpleEntry<>(getDefaultCommand(), args);
@@ -69,7 +96,7 @@ public class DrinkCommandContainer extends Command implements PluginIdentifiable
 
     @Nullable
     public DrinkCommand getDefaultCommand() {
-        return commands.get(DrinkCommandService.DEFAULT_KEY);
+        return defaultCommand;
     }
 
     @Override
@@ -90,5 +117,52 @@ public class DrinkCommandContainer extends Command implements PluginIdentifiable
     @Override
     public Plugin getPlugin() {
         return commandService.getPlugin();
+    }
+
+    public DrinkCommandService getCommandService() {
+        return commandService;
+    }
+
+    public Object getObject() {
+        return object;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    public Set<String> getDrinkAliases() {
+        return aliases;
+    }
+
+    public Map<String, DrinkCommand> getCommands() {
+        return commands;
+    }
+
+    public DrinkCommandExecutor getExecutor() {
+        return executor;
+    }
+
+    public DrinkTabCompleter getTabCompleter() {
+        return tabCompleter;
+    }
+
+    public boolean isOverrideExistingCommands() {
+        return overrideExistingCommands;
+    }
+
+    public DrinkCommandContainer setOverrideExistingCommands(boolean overrideExistingCommands) {
+        this.overrideExistingCommands = overrideExistingCommands;
+        return this;
+    }
+
+    public boolean isDefaultCommandIsHelp() {
+        return defaultCommandIsHelp;
+    }
+
+    public DrinkCommandContainer setDefaultCommandIsHelp(boolean defaultCommandIsHelp) {
+        this.defaultCommandIsHelp = defaultCommandIsHelp;
+        return this;
     }
 }
