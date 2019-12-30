@@ -38,6 +38,50 @@ The `CommandService` class is how you will be registering commands for your plug
 CommandService drink = Drink.get(this); // Assuming 'this' is your JavaPlugin instance
 ```
 
+### Creating a command
+
+Creating a command with drink is simple.  You can put a command in any class.  You don't have to extend or implement any classes.
+
+Simply annotate a method with `@Command`:
+
+```java
+import com.jonahseguin.drink.annotation.Command;
+import com.jonahseguin.drink.annotation.Sender;
+import org.bukkit.command.CommandSender;
+
+public class ExampleCommand {
+    // The reason we are leaving the name blank is that we want this to be the default command.
+    // So when we use /example, it will execute this.
+    // A default command is optional.
+    @Command(name = "", aliases = {}, desc = "An example command.", usage = "")
+    public void exampleRoot(@Sender CommandSender sender) {
+        sender.sendMessage("You used the example command!");
+    }
+}
+```
+
+### Registering your commands
+
+Registering your commands with drink is easy.
+
+```java
+    @Override
+    public void onEnable() {
+        CommandService drink = Drink.get(this);
+
+        drink.register(new ExampleCommand(), "example", "some-alias")
+            .registerSub(new SomeOtherCommand()); // if you want to register a sub-command
+        // or
+        drink.registerSub(drink.get("example"), new SomeOtherCommand());
+
+        // Make sure you call drink.registerCommands() after you're done registering your commands to register them
+        // With spigot.
+        drink.registerCommands();
+    }
+```
+
+Do not forget to call `drink.registerCommands()`!
+
 ### Binding providers
 Providers are the basis for how drink works.  If you are familar with Google's Guice or sk89q's Intake, this syntax will be very familiar.
 
@@ -147,50 +191,6 @@ If you want to make your own `@Classifier` annotation, make sure it has the foll
 - `RetentionPolicy` should be `RUNTIME` (`@Retention(RetentionPolicy.RUNTIME)` annotated on your annotation's class)
 - `@Target` should be `ElementType.PARAMETER`
 - Must have a `@Classifier` annotation on your annotation's class
-
-### Creating a command
-
-Creating a command with drink is simple.  You can put a command in any class.  You don't have to extend or implement any classes.
-
-Simply annotate a method with `@Command`:
-
-```java
-import com.jonahseguin.drink.annotation.Command;
-import com.jonahseguin.drink.annotation.Sender;
-import org.bukkit.command.CommandSender;
-
-public class ExampleCommand {
-    // The reason we are leaving the name blank is that we want this to be the default command.
-    // So when we use /example, it will execute this.
-    // A default command is optional.
-    @Command(name = "", aliases = {}, desc = "An example command.", usage = "")
-    public void exampleRoot(@Sender CommandSender sender) {
-        sender.sendMessage("You used the example command!");
-    }
-}
-```
-
-### Registering your commands
-
-Registering your commands with drink is easy.
-
-```java
-    @Override
-    public void onEnable() {
-        CommandService drink = Drink.get(this);
-
-        drink.register(new ExampleCommand(), "example", "some-alias")
-            .registerSub(new SomeOtherCommand()); // if you want to register a sub-command
-        // or
-        drink.registerSub(drink.get("example"), new SomeOtherCommand());
-
-        // Make sure you call drink.registerCommands() after you're done registering your commands to register them
-        // With spigot.
-        drink.registerCommands();
-    }
-```
-
-Do not forget to call `drink.registerCommands()`!
 
 ### Permissions
 
