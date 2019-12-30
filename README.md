@@ -132,15 +132,15 @@ Now we want to tell drink how to use our provider.
 
 ```java
 // Binding to a provider
-bind(Player.class).toProvider(new PlayerProvider(this));
+drink.bind(Player.class).toProvider(new PlayerProvider(this));
 // You can also bind to an instance if you want
-bind(MyPlugin.class).toInstance(this);
+drink.bind(MyPlugin.class).toInstance(this);
 ```
 
 You can have multiple bindings for the same class using `@Classifier` annotations.
 For example, if you wanted to use a seperate provider for when the Player is the CommandSender, you can use
 ```java
-bind(Player.class).annotatedWith(Sender.class).toProvider(new PlayerSenderProvider());
+drink.bind(Player.class).annotatedWith(Sender.class).toProvider(new PlayerSenderProvider());
 ```
 
 If you want to make your own `@Classifier` annotation, make sure it has the following properties:
