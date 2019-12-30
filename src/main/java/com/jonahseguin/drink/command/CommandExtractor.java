@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.jonahseguin.drink.annotation.Command;
 import com.jonahseguin.drink.annotation.Require;
 import com.jonahseguin.drink.exception.CommandRegistrationException;
+import com.jonahseguin.drink.exception.CommandStructureException;
 import com.jonahseguin.drink.exception.MissingProviderException;
 
 import javax.annotation.Nonnull;
@@ -21,7 +22,7 @@ public class CommandExtractor {
         this.commandService = commandService;
     }
 
-    public Map<String, DrinkCommand> extractCommands(@Nonnull Object handler) throws MissingProviderException {
+    public Map<String, DrinkCommand> extractCommands(@Nonnull Object handler) throws MissingProviderException, CommandStructureException {
         Preconditions.checkNotNull(handler, "Handler object cannot be null");
         final Map<String, DrinkCommand> commands = new HashMap<>();
         for (Method method : handler.getClass().getDeclaredMethods()) {
@@ -34,7 +35,7 @@ public class CommandExtractor {
         return commands;
     }
 
-    private Optional<DrinkCommand> extractCommand(@Nonnull Object handler, @Nonnull Method method) throws MissingProviderException {
+    private Optional<DrinkCommand> extractCommand(@Nonnull Object handler, @Nonnull Method method) throws MissingProviderException, CommandStructureException {
         Preconditions.checkNotNull(handler, "Handler object cannot be null");
         Preconditions.checkNotNull(method, "Method cannot be null");
         if (method.isAnnotationPresent(Command.class)) {

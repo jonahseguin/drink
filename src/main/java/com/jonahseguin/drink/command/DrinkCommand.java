@@ -1,5 +1,6 @@
 package com.jonahseguin.drink.command;
 
+import com.jonahseguin.drink.exception.CommandStructureException;
 import com.jonahseguin.drink.exception.MissingProviderException;
 import com.jonahseguin.drink.parametric.CommandParameter;
 import com.jonahseguin.drink.parametric.CommandParameters;
@@ -28,7 +29,7 @@ public class DrinkCommand {
     private final boolean requiresAsync;
     private final String generatedUsage;
 
-    public DrinkCommand(DrinkCommandService commandService, String name, Set<String> aliases, String description, String usage, String permission, Object handler, Method method) throws MissingProviderException {
+    public DrinkCommand(DrinkCommandService commandService, String name, Set<String> aliases, String description, String usage, String permission, Object handler, Method method) throws MissingProviderException, CommandStructureException {
         this.commandService = commandService;
         this.name = name;
         this.aliases = aliases;

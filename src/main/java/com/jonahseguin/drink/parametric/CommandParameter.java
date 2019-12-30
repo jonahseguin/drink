@@ -1,17 +1,13 @@
 package com.jonahseguin.drink.parametric;
 
 import com.google.common.collect.ImmutableList;
-import com.jonahseguin.drink.annotation.Classifier;
-import com.jonahseguin.drink.annotation.Modifier;
-import com.jonahseguin.drink.modifier.annotation.Optional;
+import com.jonahseguin.drink.annotation.*;
 import lombok.Getter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 public class CommandParameter {
@@ -21,6 +17,8 @@ public class CommandParameter {
     private final List<Annotation> allAnnotations;
     private final List<Annotation> classifierAnnotations;
     private final List<Annotation> modifierAnnotations;
+    private final boolean flag;
+    private final boolean requireLastArg;
 
     public CommandParameter(Class<?> type, Parameter parameter, Annotation[] allAnnotations) {
         this.type = type;
@@ -28,6 +26,17 @@ public class CommandParameter {
         this.allAnnotations = ImmutableList.copyOf(allAnnotations);
         this.classifierAnnotations = loadClassifiers();
         this.modifierAnnotations = loadModifiers();
+        this.flag = loadFlag();
+        this.requireLastArg = calculateRequireLastArg();
+    }
+
+    private boolean calculateRequireLastArg() {
+        for (Annotation annotation : allAnnotations) {
+            if (annotation.annotationType().isAnnotationPresent(LastArg.class)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isOptional() {
@@ -36,6 +45,18 @@ public class CommandParameter {
 
     public String getDefaultOptionalValue() {
         return parameter.getAnnotation(Optional.class).value();
+    }
+
+    private boolean loadFlag() {
+        return parameter.isAnnotationPresent(Flag.class);
+    }
+
+    public boolean isFlag() {
+        return flag;
+    }
+
+    public Flag getFlag() {
+        return parameter.getAnnotation(Flag.class);
     }
 
     private List<Annotation> loadClassifiers() {

@@ -1,14 +1,14 @@
 package com.jonahseguin.drink.provider;
 
-import com.jonahseguin.drink.command.CommandArgs;
+import com.jonahseguin.drink.argument.CommandArg;
 import com.jonahseguin.drink.exception.CommandExitMessage;
 import com.jonahseguin.drink.parametric.DrinkProvider;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class DoubleProvider extends DrinkProvider<Double> {
 
@@ -25,11 +25,21 @@ public class DoubleProvider extends DrinkProvider<Double> {
     }
 
     @Override
-    public Optional<Double> provide(@Nonnull CommandArgs args, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
-        String s = args.next();
+    public boolean allowNullArgument() {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public Double defaultNullValue() {
+        return 0D;
+    }
+
+    @Override
+    public Double provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
+        String s = arg.get();
         try {
-            Double i = Double.parseDouble(s);
-            return Optional.of(i);
+            return Double.parseDouble(s);
         }
         catch (NumberFormatException ex) {
             throw new CommandExitMessage("Required: Decimal Number, Given: '" + s + "'");

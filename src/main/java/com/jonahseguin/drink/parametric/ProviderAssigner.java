@@ -2,6 +2,7 @@ package com.jonahseguin.drink.parametric;
 
 import com.jonahseguin.drink.command.DrinkCommand;
 import com.jonahseguin.drink.command.DrinkCommandService;
+import com.jonahseguin.drink.exception.CommandStructureException;
 import com.jonahseguin.drink.exception.MissingProviderException;
 
 public class ProviderAssigner {
@@ -12,11 +13,14 @@ public class ProviderAssigner {
         this.commandService = commandService;
     }
 
-    public DrinkProvider<?>[] assignProvidersFor(DrinkCommand drinkCommand) throws MissingProviderException {
+    public DrinkProvider<?>[] assignProvidersFor(DrinkCommand drinkCommand) throws MissingProviderException, CommandStructureException {
         CommandParameters parameters = drinkCommand.getParameters();
         DrinkProvider<?>[] providers = new DrinkProvider<?>[parameters.getParameters().length];
         for (int i = 0; i < parameters.getParameters().length; i++) {
             CommandParameter param = parameters.getParameters()[i];
+            if (param.isRequireLastArg() && i != parameters.getParameters().length - 1) {
+                throw new CommandStructureException("Parameter " + param.getParameter().getName() + " [argument " + i + "] (" + param.getParameter().getType().getSimpleName() + ") in method '" + drinkCommand.getMethod().getName() + "' must be the last argument in the method.");
+            }
             BindingContainer<?> bindings = commandService.getBindingsFor(param.getType());
             if (bindings != null) {
                 DrinkProvider<?> provider = null;

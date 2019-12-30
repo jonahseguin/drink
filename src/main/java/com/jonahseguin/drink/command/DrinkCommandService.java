@@ -3,9 +3,15 @@ package com.jonahseguin.drink.command;
 import com.google.common.base.Preconditions;
 import com.jonahseguin.drink.CommandService;
 import com.jonahseguin.drink.annotation.Sender;
+import com.jonahseguin.drink.annotation.Text;
+import com.jonahseguin.drink.argument.ArgumentParser;
+import com.jonahseguin.drink.argument.CommandArgs;
 import com.jonahseguin.drink.exception.*;
 import com.jonahseguin.drink.modifier.ModifierService;
-import com.jonahseguin.drink.parametric.*;
+import com.jonahseguin.drink.parametric.BindingContainer;
+import com.jonahseguin.drink.parametric.DrinkBinding;
+import com.jonahseguin.drink.parametric.DrinkProvider;
+import com.jonahseguin.drink.parametric.ProviderAssigner;
 import com.jonahseguin.drink.parametric.binder.DrinkBinder;
 import com.jonahseguin.drink.provider.*;
 import com.jonahseguin.drink.provider.spigot.CommandSenderProvider;
@@ -22,10 +28,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -41,6 +44,7 @@ public class DrinkCommandService implements CommandService {
     private final ArgumentParser argumentParser;
     private final ModifierService modifierService;
     private final DrinkSpigotRegistry spigotRegistry;
+    private final FlagExtractor flagExtractor;
     private DrinkAuthorizer authorizer;
 
     private final ConcurrentMap<String, DrinkCommandContainer> commands = new ConcurrentHashMap<>();
@@ -54,6 +58,7 @@ public class DrinkCommandService implements CommandService {
         this.argumentParser = new ArgumentParser(this);
         this.modifierService = new ModifierService(this);
         this.spigotRegistry = new DrinkSpigotRegistry(this);
+        this.flagExtractor = new FlagExtractor(this);
         this.authorizer = new DrinkAuthorizer();
 
         this.bindDefaults();
@@ -69,6 +74,7 @@ public class DrinkCommandService implements CommandService {
         bind(Long.class).toProvider(LongProvider.INSTANCE);
         bind(long.class).toProvider(LongProvider.INSTANCE);
         bind(String.class).toProvider(StringProvider.INSTANCE);
+        bind(String.class).annotatedWith(Text.class).toProvider(TextProvider.INSTANCE);
 
         bind(CommandSender.class).annotatedWith(Sender.class).toProvider(CommandSenderProvider.INSTANCE);
         bind(Player.class).annotatedWith(Sender.class).toProvider(PlayerSenderProvider.INSTANCE);
@@ -106,7 +112,7 @@ public class DrinkCommandService implements CommandService {
             DrinkCommandContainer container = new DrinkCommandContainer(this, handler, name, aliasesSet, extractCommands);
             commands.put(getCommandKey(name), container);
             return container;
-        } catch (MissingProviderException ex) {
+        } catch (MissingProviderException | CommandStructureException ex) {
             throw new CommandRegistrationException("Could not register command '" + name + "': " + ex.getMessage(), ex);
         }
     }
@@ -119,7 +125,7 @@ public class DrinkCommandService implements CommandService {
             Map<String, DrinkCommand> extractCommands = extractor.extractCommands(handler);
             extractCommands.forEach((s, d) -> root.getCommands().put(s, d));
             return root;
-        } catch (MissingProviderException ex) {
+        } catch (MissingProviderException | CommandStructureException ex) {
             throw new CommandRegistrationException("Could not register sub-command in root '" + root + "' with handler '" + handler.getClass().getSimpleName() + "': " + ex.getMessage(), ex);
         }
     }
@@ -139,9 +145,12 @@ public class DrinkCommandService implements CommandService {
     }
 
     private void finishExecution(@Nonnull CommandSender sender, @Nonnull DrinkCommand command, @Nonnull String[] args) {
-        CommandArgs commandArgs = new CommandArgs(sender, Arrays.asList(args));
-        CommandExecution execution = new CommandExecution(this, sender, args, commandArgs, command);
+        List<String> argList = new ArrayList<>(Arrays.asList(args));
+        argList = argumentParser.combineMultiWordArguments(argList);
         try {
+            Map<Character, CommandFlag> flags = flagExtractor.extractFlags(argList);
+            CommandArgs commandArgs = new CommandArgs(this, sender, Arrays.asList(args), flags);
+            CommandExecution execution = new CommandExecution(this, sender, args, commandArgs, command);
             Object[] parsedArguments = argumentParser.parseArguments(execution, command, commandArgs);
             if (!execution.isCanExecute()) {
                 return;

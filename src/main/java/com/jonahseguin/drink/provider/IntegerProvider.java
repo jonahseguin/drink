@@ -1,14 +1,14 @@
 package com.jonahseguin.drink.provider;
 
-import com.jonahseguin.drink.command.CommandArgs;
+import com.jonahseguin.drink.argument.CommandArg;
 import com.jonahseguin.drink.exception.CommandExitMessage;
 import com.jonahseguin.drink.parametric.DrinkProvider;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class IntegerProvider extends DrinkProvider<Integer> {
 
@@ -25,11 +25,22 @@ public class IntegerProvider extends DrinkProvider<Integer> {
     }
 
     @Override
-    public Optional<Integer> provide(@Nonnull CommandArgs args, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
-        String s = args.next();
+    public boolean allowNullArgument() {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public Integer defaultNullValue() {
+        return 0;
+    }
+
+    @Override
+    @Nullable
+    public Integer provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
+        String s = arg.get();
         try {
-            Integer i = Integer.parseInt(s);
-            return Optional.of(i);
+            return Integer.parseInt(s);
         }
         catch (NumberFormatException ex) {
             throw new CommandExitMessage("Required: Integer, Given: '" + s + "'");

@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -25,7 +24,8 @@ public class ModifierService {
         this.commandService = commandService;
     }
 
-    public Optional<Object> executeModifiers(@Nonnull CommandExecution execution, @Nonnull CommandParameter param, @Nullable Object parsedArgument) {
+    @Nullable
+    public Object executeModifiers(@Nonnull CommandExecution execution, @Nonnull CommandParameter param, @Nullable Object parsedArgument) {
         Preconditions.checkNotNull(execution, "CommandExecution cannot be null");
         Preconditions.checkNotNull(param, "CommandParameter cannot be null");
         for (Annotation annotation : param.getModifierAnnotations()) {
@@ -36,7 +36,7 @@ public class ModifierService {
                 }
             }
         }
-        return Optional.ofNullable(parsedArgument);
+        return parsedArgument;
     }
 
     public <T> void registerModifier(@Nonnull Class<? extends Annotation> annotation, @Nonnull Class<T> type, @Nonnull DrinkModifier<T> modifier) {

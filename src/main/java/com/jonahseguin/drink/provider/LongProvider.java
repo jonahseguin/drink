@@ -1,14 +1,14 @@
 package com.jonahseguin.drink.provider;
 
-import com.jonahseguin.drink.command.CommandArgs;
+import com.jonahseguin.drink.argument.CommandArg;
 import com.jonahseguin.drink.exception.CommandExitMessage;
 import com.jonahseguin.drink.parametric.DrinkProvider;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class LongProvider extends DrinkProvider<Long> {
 
@@ -25,11 +25,21 @@ public class LongProvider extends DrinkProvider<Long> {
     }
 
     @Override
-    public Optional<Long> provide(@Nonnull CommandArgs args, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
-        String s = args.next();
+    public boolean allowNullArgument() {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public Long defaultNullValue() {
+        return 0L;
+    }
+
+    @Override
+    public Long provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
+        String s = arg.get();
         try {
-            Long i = Long.parseLong(s);
-            return Optional.of(i);
+            return Long.parseLong(s);
         }
         catch (NumberFormatException ex) {
             throw new CommandExitMessage("Required: Long Number, Given: '" + s + "'");

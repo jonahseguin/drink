@@ -1,15 +1,15 @@
 package com.jonahseguin.drink.provider;
 
 import com.google.common.collect.ImmutableList;
-import com.jonahseguin.drink.command.CommandArgs;
+import com.jonahseguin.drink.argument.CommandArg;
 import com.jonahseguin.drink.exception.CommandExitMessage;
 import com.jonahseguin.drink.parametric.DrinkProvider;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class BooleanProvider extends DrinkProvider<Boolean> {
 
@@ -30,11 +30,24 @@ public class BooleanProvider extends DrinkProvider<Boolean> {
     }
 
     @Override
-    public Optional<Boolean> provide(@Nonnull CommandArgs args, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
-        String s = args.next();
+    public boolean allowNullArgument() {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public Boolean defaultNullValue() {
+        return false;
+    }
+
+    @Override
+    public Boolean provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
+        String s = arg.get();
+        if (s == null) {
+            return false;
+        }
         try {
-            Boolean i = Boolean.parseBoolean(s);
-            return Optional.of(i);
+            return Boolean.parseBoolean(s);
         }
         catch (NumberFormatException ex) {
             throw new CommandExitMessage("Required: Boolean (true/false), Given: '" + s + "'");

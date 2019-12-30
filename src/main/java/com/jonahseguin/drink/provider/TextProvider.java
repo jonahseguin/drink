@@ -1,9 +1,8 @@
-package com.jonahseguin.drink.provider.spigot;
+package com.jonahseguin.drink.provider;
 
 import com.jonahseguin.drink.argument.CommandArg;
 import com.jonahseguin.drink.exception.CommandExitMessage;
 import com.jonahseguin.drink.parametric.DrinkProvider;
-import org.bukkit.command.CommandSender;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -11,13 +10,13 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandSenderProvider extends DrinkProvider<CommandSender> {
+public class TextProvider extends DrinkProvider<String> {
 
-    public static final CommandSenderProvider INSTANCE = new CommandSenderProvider();
+    public static final TextProvider INSTANCE = new TextProvider();
 
     @Override
     public boolean doesConsumeArgument() {
-        return false;
+        return true;
     }
 
     @Override
@@ -25,26 +24,19 @@ public class CommandSenderProvider extends DrinkProvider<CommandSender> {
         return false;
     }
 
-    @Override
-    public boolean allowNullArgument() {
-        return true;
-    }
-
     @Nullable
     @Override
-    public CommandSender defaultNullValue() {
-        return null;
-    }
-
-    @Override
-    @Nullable
-    public CommandSender provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
-        return arg.getSender();
+    public String provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
+        StringBuilder builder = new StringBuilder(arg.get());
+        while (arg.getArgs().hasNext()) {
+            builder.append(arg.getArgs().next()).append(" ");
+        }
+        return builder.toString();
     }
 
     @Override
     public String argumentDescription() {
-        return "sender";
+        return "text";
     }
 
     @Override

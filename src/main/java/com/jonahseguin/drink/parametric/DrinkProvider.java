@@ -1,12 +1,12 @@
 package com.jonahseguin.drink.parametric;
 
-import com.jonahseguin.drink.command.CommandArgs;
+import com.jonahseguin.drink.argument.CommandArg;
 import com.jonahseguin.drink.exception.CommandExitMessage;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.List;
-import java.util.Optional;
 
 public abstract class DrinkProvider<T> {
 
@@ -14,7 +14,17 @@ public abstract class DrinkProvider<T> {
 
     public abstract boolean isAsync();
 
-    public abstract Optional<T> provide(@Nonnull CommandArgs args, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage;
+    public boolean allowNullArgument() {
+        return true;
+    }
+
+    @Nullable
+    public T defaultNullValue() {
+        return null;
+    }
+
+    @Nullable
+    public abstract T provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage;
 
     public abstract String argumentDescription();
 
