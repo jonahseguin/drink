@@ -1,7 +1,6 @@
 package com.jonahseguin.drink.command;
 
 import com.jonahseguin.drink.exception.CommandRegistrationException;
-import com.jonahseguin.drink.internal.DrinkCommandService;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;

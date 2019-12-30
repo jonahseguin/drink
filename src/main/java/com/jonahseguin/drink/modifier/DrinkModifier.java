@@ -1,6 +1,6 @@
 package com.jonahseguin.drink.modifier;
 
-import com.jonahseguin.drink.internal.CommandExecution;
+import com.jonahseguin.drink.command.CommandExecution;
 import com.jonahseguin.drink.parametric.CommandParameter;
 
 import javax.annotation.Nonnull;

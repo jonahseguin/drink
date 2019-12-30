@@ -1,7 +1,5 @@
-package com.jonahseguin.drink.internal;
+package com.jonahseguin.drink.command;
 
-import com.jonahseguin.drink.command.CommandArgs;
-import com.jonahseguin.drink.command.DrinkCommand;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
 

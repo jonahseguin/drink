@@ -1,7 +1,5 @@
-package com.jonahseguin.drink.internal;
+package com.jonahseguin.drink.command;
 
-import com.jonahseguin.drink.command.DrinkCommand;
-import com.jonahseguin.drink.command.DrinkCommandContainer;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -9,8 +7,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-
-import javax.annotation.Nullable;
 
 @Getter
 @Setter

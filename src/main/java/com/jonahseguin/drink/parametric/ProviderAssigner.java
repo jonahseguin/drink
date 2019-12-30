@@ -1,8 +1,8 @@
 package com.jonahseguin.drink.parametric;
 
 import com.jonahseguin.drink.command.DrinkCommand;
+import com.jonahseguin.drink.command.DrinkCommandService;
 import com.jonahseguin.drink.exception.MissingProviderException;
-import com.jonahseguin.drink.internal.DrinkCommandService;
 
 public class ProviderAssigner {
 
@@ -28,7 +28,6 @@ public class ProviderAssigner {
                 }
                 if (provider != null) {
                     providers[i] = provider;
-                    System.out.println("Assigned provider " + provider.getClass().getSimpleName() + " for argument [" + i + "] for command method " + drinkCommand.getMethod().getName());
                 }
                 else {
                     throw new MissingProviderException("No provider bound for " + param.getType().getSimpleName() + " for parameter " + i + " for method " + drinkCommand.getMethod().getName());

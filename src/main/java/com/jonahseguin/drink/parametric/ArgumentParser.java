@@ -2,14 +2,13 @@ package com.jonahseguin.drink.parametric;
 
 import com.google.common.base.Preconditions;
 import com.jonahseguin.drink.command.CommandArgs;
+import com.jonahseguin.drink.command.CommandExecution;
 import com.jonahseguin.drink.command.DrinkCommand;
+import com.jonahseguin.drink.command.DrinkCommandService;
 import com.jonahseguin.drink.exception.CommandArgumentException;
 import com.jonahseguin.drink.exception.CommandExitMessage;
-import com.jonahseguin.drink.internal.CommandExecution;
-import com.jonahseguin.drink.internal.DrinkCommandService;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
 import java.util.Optional;
 
 public class ArgumentParser {
@@ -30,8 +29,6 @@ public class ArgumentParser {
             boolean skipOptional = false; // dont complete exceptionally if true if the arg is missing
 
             DrinkProvider<?> provider = command.getProviders()[i];
-
-            System.out.println("Argument [" + i + "] Using provider " + provider.getClass().getSimpleName());
 
             if (!args.hasNext()) {
                 if (provider.doesConsumeArgument()) {
@@ -62,7 +59,6 @@ public class ArgumentParser {
                 o = commandService.getModifierService().executeModifiers(execution, param, o.orElse(null));
                 if (o.isPresent()) {
                     arguments[i] = o.get();
-                    System.out.println("Argument: [" + i + "] Used provider " + provider.getClass().getSimpleName() + " to get value " + arguments[i].toString());
                 } else {
                     throw new CommandArgumentException("Missing argument for: " + provider.argumentDescription());
                 }

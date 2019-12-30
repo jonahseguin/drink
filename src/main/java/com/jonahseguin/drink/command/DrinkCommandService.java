@@ -1,9 +1,8 @@
-package com.jonahseguin.drink.internal;
+package com.jonahseguin.drink.command;
 
 import com.google.common.base.Preconditions;
 import com.jonahseguin.drink.CommandService;
 import com.jonahseguin.drink.annotation.Sender;
-import com.jonahseguin.drink.command.*;
 import com.jonahseguin.drink.exception.*;
 import com.jonahseguin.drink.modifier.ModifierService;
 import com.jonahseguin.drink.parametric.*;
@@ -23,11 +22,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Getter
 public class DrinkCommandService implements CommandService {
@@ -41,7 +41,6 @@ public class DrinkCommandService implements CommandService {
     private final ArgumentParser argumentParser;
     private final ModifierService modifierService;
     private final DrinkSpigotRegistry spigotRegistry;
-    private final ExecutorService executor = Executors.newCachedThreadPool();
     private DrinkAuthorizer authorizer;
 
     private final ConcurrentMap<String, DrinkCommandContainer> commands = new ConcurrentHashMap<>();
@@ -113,29 +112,25 @@ public class DrinkCommandService implements CommandService {
     }
 
     @Override
-    public DrinkCommandContainer registerSub(@Nonnull String root, @Nonnull Object handler) {
-        Preconditions.checkNotNull(root, "Root command name cannot be null");
+    public DrinkCommandContainer registerSub(@Nonnull DrinkCommandContainer root, @Nonnull Object handler) {
+        Preconditions.checkNotNull(root, "Root command container cannot be null");
         Preconditions.checkNotNull(handler, "Handler object cannot be null");
-        DrinkCommandContainer rootContainer = get(root);
-        if (rootContainer == null) {
-            throw new IllegalStateException("Couldn't find root command container to register sub command for root: " + root);
-        }
         try {
             Map<String, DrinkCommand> extractCommands = extractor.extractCommands(handler);
-            extractCommands.forEach((s, d) -> rootContainer.getCommands().put(s, d));
-            return rootContainer;
+            extractCommands.forEach((s, d) -> root.getCommands().put(s, d));
+            return root;
         } catch (MissingProviderException ex) {
             throw new CommandRegistrationException("Could not register sub-command in root '" + root + "' with handler '" + handler.getClass().getSimpleName() + "': " + ex.getMessage(), ex);
         }
     }
 
-    public void executeCommand(@Nonnull CommandSender sender, @Nonnull DrinkCommand command, @Nonnull String[] args) {
+    void executeCommand(@Nonnull CommandSender sender, @Nonnull DrinkCommand command, @Nonnull String[] args) {
         Preconditions.checkNotNull(sender, "Sender cannot be null");
         Preconditions.checkNotNull(command, "Command cannot be null");
         Preconditions.checkNotNull(args, "Args cannot be null");
         if (authorizer.isAuthorized(sender, command)) {
             if (command.isRequiresAsync()) {
-                executor.submit(() -> finishExecution(sender, command, args));
+                plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> finishExecution(sender, command, args));
             }
             else {
                 finishExecution(sender, command, args);

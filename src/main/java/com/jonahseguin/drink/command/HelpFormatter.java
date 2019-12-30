@@ -1,6 +1,5 @@
-package com.jonahseguin.drink.internal;
+package com.jonahseguin.drink.command;
 
-import com.jonahseguin.drink.command.DrinkCommandContainer;
 import org.bukkit.command.CommandSender;
 
 public interface HelpFormatter {

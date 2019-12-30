@@ -1,11 +1,6 @@
 package com.jonahseguin.drink.command;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Supplier;
-import com.jonahseguin.drink.exception.CommandRegistrationException;
-import com.jonahseguin.drink.internal.DrinkCommandExecutor;
-import com.jonahseguin.drink.internal.DrinkCommandService;
-import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -44,6 +39,10 @@ public class DrinkCommandContainer extends Command implements PluginIdentifiable
             setDescription(defaultCommand.getDescription());
             setPermission(defaultCommand.getPermission());
         }
+    }
+
+    public final DrinkCommandContainer registerSub(@Nonnull Object handler) {
+        return commandService.registerSub(this, handler);
     }
 
     public List<String> getCommandSuggestions(@Nonnull String prefix) {

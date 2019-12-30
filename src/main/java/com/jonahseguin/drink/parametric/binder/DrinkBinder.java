@@ -1,7 +1,7 @@
 package com.jonahseguin.drink.parametric.binder;
 
 import com.google.common.base.Preconditions;
-import com.jonahseguin.drink.internal.DrinkCommandService;
+import com.jonahseguin.drink.command.DrinkCommandService;
 import com.jonahseguin.drink.parametric.DrinkProvider;
 import com.jonahseguin.drink.provider.InstanceProvider;
 

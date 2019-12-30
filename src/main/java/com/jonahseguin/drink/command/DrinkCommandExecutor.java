@@ -1,7 +1,5 @@
-package com.jonahseguin.drink.internal;
+package com.jonahseguin.drink.command;
 
-import com.jonahseguin.drink.command.DrinkCommand;
-import com.jonahseguin.drink.command.DrinkCommandContainer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -32,7 +30,6 @@ public class DrinkCommandExecutor implements CommandExecutor {
                             return true;
                         }
                     }
-                    System.out.println("Executing command /" + container.getName() + " " + data.getKey().getName() + " via method " + data.getKey().getMethod().getName());
                     commandService.executeCommand(sender, data.getKey(), data.getValue());
                 } else {
                     if (args.length > 0) {

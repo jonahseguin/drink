@@ -6,7 +6,6 @@ import com.jonahseguin.drink.annotation.Command;
 import com.jonahseguin.drink.annotation.Require;
 import com.jonahseguin.drink.exception.CommandRegistrationException;
 import com.jonahseguin.drink.exception.MissingProviderException;
-import com.jonahseguin.drink.internal.DrinkCommandService;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
@@ -30,7 +29,6 @@ public class CommandExtractor {
             if (o.isPresent()) {
                 DrinkCommand drinkCommand = o.get();
                 commands.put(commandService.getCommandKey(drinkCommand.getName()), drinkCommand);
-                System.out.println("[Drink] Extracted command '" + drinkCommand.getName() + "' from method " + method.getName() + " from class '" + handler.getClass().getSimpleName() + "'");
             }
         }
         return commands;

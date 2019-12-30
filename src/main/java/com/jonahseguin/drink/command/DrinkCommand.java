@@ -1,7 +1,6 @@
 package com.jonahseguin.drink.command;
 
 import com.jonahseguin.drink.exception.MissingProviderException;
-import com.jonahseguin.drink.internal.DrinkCommandService;
 import com.jonahseguin.drink.parametric.CommandParameter;
 import com.jonahseguin.drink.parametric.CommandParameters;
 import com.jonahseguin.drink.parametric.DrinkProvider;

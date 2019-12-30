@@ -3,8 +3,8 @@ package com.jonahseguin.drink.modifier;
 import com.google.common.base.Preconditions;
 import com.jonahseguin.drink.annotation.Classifier;
 import com.jonahseguin.drink.annotation.Modifier;
-import com.jonahseguin.drink.internal.CommandExecution;
-import com.jonahseguin.drink.internal.DrinkCommandService;
+import com.jonahseguin.drink.command.CommandExecution;
+import com.jonahseguin.drink.command.DrinkCommandService;
 import com.jonahseguin.drink.parametric.CommandParameter;
 
 import javax.annotation.Nonnull;

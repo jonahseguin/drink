@@ -1,6 +1,5 @@
 package com.jonahseguin.drink.command;
 
-import com.jonahseguin.drink.internal.DrinkCommandService;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
