@@ -61,7 +61,7 @@ public class DrinkCommand {
 
     public String getShortDescription() {
         if (description.length() > 24) {
-            return description.substring(0, 24) + "...";
+            return description.substring(0, 21) + "...";
         }
         else {
             return description;
@@ -73,14 +73,18 @@ public class DrinkCommand {
         for (int i = 0; i < parameters.getParameters().length; i++) {
             CommandParameter parameter = parameters.getParameters()[i];
             DrinkProvider provider = providers[i];
-            if (provider.doesConsumeArgument()) {
-                if (parameter.isOptional()) {
-                    sb.append("[").append(provider.argumentDescription()).append(" = ").append(parameter.getDefaultOptionalValue()).append("]");
+            if (parameter.isFlag()) {
+                sb.append("-").append(parameter.getFlag().value()).append(" ");
+            }
+            else {
+                if (provider.doesConsumeArgument()) {
+                    if (parameter.isOptional()) {
+                        sb.append("[").append(provider.argumentDescription()).append(" = ").append(parameter.getDefaultOptionalValue()).append("]");
+                    } else {
+                        sb.append("<").append(provider.argumentDescription()).append(">");
+                    }
+                    sb.append(" ");
                 }
-                else {
-                    sb.append("<").append(provider.argumentDescription()).append(">");
-                }
-                sb.append(" ");
             }
         }
         return sb.toString();

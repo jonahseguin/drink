@@ -7,6 +7,7 @@ import com.jonahseguin.drink.annotation.Text;
 import com.jonahseguin.drink.argument.ArgumentParser;
 import com.jonahseguin.drink.argument.CommandArgs;
 import com.jonahseguin.drink.exception.*;
+import com.jonahseguin.drink.modifier.DrinkModifier;
 import com.jonahseguin.drink.modifier.ModifierService;
 import com.jonahseguin.drink.parametric.BindingContainer;
 import com.jonahseguin.drink.parametric.DrinkBinding;
@@ -130,6 +131,11 @@ public class DrinkCommandService implements CommandService {
         }
     }
 
+    @Override
+    public <T> void registerModifier(@Nonnull Class<? extends Annotation> annotation, @Nonnull Class<T> type, @Nonnull DrinkModifier<T> modifier) {
+        modifierService.registerModifier(annotation, type, modifier);
+    }
+
     void executeCommand(@Nonnull CommandSender sender, @Nonnull DrinkCommand command, @Nonnull String[] args) {
         Preconditions.checkNotNull(sender, "Sender cannot be null");
         Preconditions.checkNotNull(command, "Command cannot be null");
@@ -146,11 +152,11 @@ public class DrinkCommandService implements CommandService {
 
     private void finishExecution(@Nonnull CommandSender sender, @Nonnull DrinkCommand command, @Nonnull String[] args) {
         List<String> argList = new ArrayList<>(Arrays.asList(args));
-        argList = argumentParser.combineMultiWordArguments(argList);
         try {
+            argList = argumentParser.combineMultiWordArguments(argList);
             Map<Character, CommandFlag> flags = flagExtractor.extractFlags(argList);
-            CommandArgs commandArgs = new CommandArgs(this, sender, Arrays.asList(args), flags);
-            CommandExecution execution = new CommandExecution(this, sender, args, commandArgs, command);
+            final CommandArgs commandArgs = new CommandArgs(this, sender, argList, flags);
+            CommandExecution execution = new CommandExecution(this, sender, argList, commandArgs, command);
             Object[] parsedArguments = argumentParser.parseArguments(execution, command, commandArgs);
             if (!execution.isCanExecute()) {
                 return;

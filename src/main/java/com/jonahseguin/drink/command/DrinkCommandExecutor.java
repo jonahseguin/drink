@@ -1,10 +1,12 @@
 package com.jonahseguin.drink.command;
 
+import org.apache.logging.log4j.util.Strings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import java.util.Arrays;
 import java.util.Map;
 
 public class DrinkCommandExecutor implements CommandExecutor {

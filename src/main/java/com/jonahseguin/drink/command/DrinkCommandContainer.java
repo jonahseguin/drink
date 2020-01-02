@@ -1,6 +1,7 @@
 package com.jonahseguin.drink.command;
 
 import com.google.common.base.Preconditions;
+import org.apache.logging.log4j.util.Strings;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -71,23 +72,39 @@ public class DrinkCommandContainer extends Command implements PluginIdentifiable
         return null;
     }
 
+    @Nullable
     public DrinkCommand get(@Nonnull String name) {
         Preconditions.checkNotNull(name, "Name cannot be null");
         return commands.get(commandService.getCommandKey(name));
     }
 
     @Nullable
-    public Map.Entry<DrinkCommand, String[]> getCommand(String[] args) {
-        for (int i = 0; i < args.length; i++) {
-            String s = args[i];
-            String key = commandService.getCommandKey(s);
-            if (commands.containsKey(key)) {
-                return new AbstractMap.SimpleEntry<>(commands.get(key), Arrays.copyOfRange(args, i + 1, args.length));
+    public DrinkCommand getByKeyOrAlias(@Nonnull String key) {
+        Preconditions.checkNotNull(key, "Key cannot be null");
+        if (commands.containsKey(key)) {
+            return commands.get(key);
+        }
+        for (DrinkCommand drinkCommand : commands.values()) {
+            if (drinkCommand.getAliases().contains(key)) {
+                return drinkCommand;
             }
-            for (DrinkCommand drinkCommand : commands.values()) {
-                if (drinkCommand.getAliases().contains(key)) {
-                    return new AbstractMap.SimpleEntry<>(drinkCommand, Arrays.copyOfRange(args, i + 1, args.length));
-                }
+        }
+        return null;
+    }
+
+    /**
+     * Gets a sub-command based on given arguments and also returns the new actual argument values
+     * based on the arguments that were consumed for the sub-command key
+     * @param args the original arguments passed in
+     * @return the DrinkCommand (if present, Nullable) and the new argument array
+     */
+    @Nullable
+    public Map.Entry<DrinkCommand, String[]> getCommand(String[] args) {
+        for (int i = (args.length - 1); i >= 0; i--) {
+            String key = commandService.getCommandKey(Strings.join(Arrays.asList(Arrays.copyOfRange(args, 0, i + 1)), ' '));
+            DrinkCommand drinkCommand = getByKeyOrAlias(key);
+            if (drinkCommand != null) {
+                return new AbstractMap.SimpleEntry<>(drinkCommand, Arrays.copyOfRange(args, i + 1, args.length));
             }
         }
         return new AbstractMap.SimpleEntry<>(getDefaultCommand(), args);

@@ -2,11 +2,13 @@ package com.jonahseguin.drink;
 
 import com.jonahseguin.drink.command.DrinkAuthorizer;
 import com.jonahseguin.drink.command.DrinkCommandContainer;
+import com.jonahseguin.drink.modifier.DrinkModifier;
 import com.jonahseguin.drink.parametric.binder.DrinkBinder;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.annotation.Annotation;
 
 /**
  * Drink CommandServices are {@link org.bukkit.plugin.java.JavaPlugin}-specific.
@@ -55,6 +57,15 @@ public interface CommandService {
      * @return A {@link DrinkBinder} instance to finish the binding
      */
     <T> DrinkBinder<T> bind(@Nonnull Class<T> type);
+
+    /**
+     * Registers a modifier to modify provided arguments for a specific type
+     * @param annotation The annotation to use for the modifier (must have {@link com.jonahseguin.drink.annotation.Modifier} annotated in it's class)
+     * @param type The type to modify
+     * @param modifier The modifier
+     * @param <T> The type of class to modify
+     */
+    <T> void registerModifier(@Nonnull Class<? extends Annotation> annotation, @Nonnull Class<T> type, @Nonnull DrinkModifier<T> modifier);
 
     /**
      *
