@@ -77,6 +77,8 @@ public class DrinkCommandService implements CommandService {
         bind(String.class).toProvider(StringProvider.INSTANCE);
         bind(String.class).annotatedWith(Text.class).toProvider(TextProvider.INSTANCE);
 
+        bind(CommandArgs.class).toProvider(CommandArgsProvider.INSTANCE);
+
         bind(CommandSender.class).annotatedWith(Sender.class).toProvider(CommandSenderProvider.INSTANCE);
         bind(Player.class).annotatedWith(Sender.class).toProvider(PlayerSenderProvider.INSTANCE);
         bind(Player.class).toProvider(new PlayerProvider(plugin));
@@ -136,26 +138,26 @@ public class DrinkCommandService implements CommandService {
         modifierService.registerModifier(annotation, type, modifier);
     }
 
-    void executeCommand(@Nonnull CommandSender sender, @Nonnull DrinkCommand command, @Nonnull String[] args) {
+    void executeCommand(@Nonnull CommandSender sender, @Nonnull DrinkCommand command, @Nonnull String label, @Nonnull String[] args) {
         Preconditions.checkNotNull(sender, "Sender cannot be null");
         Preconditions.checkNotNull(command, "Command cannot be null");
+        Preconditions.checkNotNull(label, "Label cannot be null");
         Preconditions.checkNotNull(args, "Args cannot be null");
         if (authorizer.isAuthorized(sender, command)) {
             if (command.isRequiresAsync()) {
-                plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> finishExecution(sender, command, args));
-            }
-            else {
-                finishExecution(sender, command, args);
+                plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> finishExecution(sender, command, label, args));
+            } else {
+                finishExecution(sender, command, label, args);
             }
         }
     }
 
-    private void finishExecution(@Nonnull CommandSender sender, @Nonnull DrinkCommand command, @Nonnull String[] args) {
+    private void finishExecution(@Nonnull CommandSender sender, @Nonnull DrinkCommand command, @Nonnull String label, @Nonnull String[] args) {
         List<String> argList = new ArrayList<>(Arrays.asList(args));
         try {
             argList = argumentParser.combineMultiWordArguments(argList);
             Map<Character, CommandFlag> flags = flagExtractor.extractFlags(argList);
-            final CommandArgs commandArgs = new CommandArgs(this, sender, argList, flags);
+            final CommandArgs commandArgs = new CommandArgs(this, sender, label, argList, flags);
             CommandExecution execution = new CommandExecution(this, sender, argList, commandArgs, command);
             Object[] parsedArguments = argumentParser.parseArguments(execution, command, commandArgs);
             if (!execution.isCanExecute()) {
