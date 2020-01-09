@@ -96,7 +96,7 @@ public class ArgumentParser {
                 if (provider.doesConsumeArgument() && value == null && args.hasNext()) {
                     value = args.next();
                 }
-                if (provider.doesConsumeArgument() && value == null) {
+                if (provider.doesConsumeArgument() && value == null && !skipOptional) {
                     throw new CommandArgumentException("Argument already consumed for next argument: " + provider.argumentDescription() + " (this is a provider error!)");
                 }
             }
