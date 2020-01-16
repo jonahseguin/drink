@@ -29,7 +29,7 @@ public class TextProvider extends DrinkProvider<String> {
     public String provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
         StringBuilder builder = new StringBuilder(arg.get());
         while (arg.getArgs().hasNext()) {
-            builder.append(arg.getArgs().next()).append(" ");
+            builder.append(" ").append(arg.getArgs().next());
         }
         return builder.toString();
     }

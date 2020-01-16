@@ -39,12 +39,16 @@ public class CommandParameter {
         return false;
     }
 
+    public boolean isText() {
+        return parameter.isAnnotationPresent(Text.class);
+    }
+
     public boolean isOptional() {
-        return parameter.isAnnotationPresent(Optional.class);
+        return parameter.isAnnotationPresent(OptArg.class);
     }
 
     public String getDefaultOptionalValue() {
-        return parameter.getAnnotation(Optional.class).value();
+        return parameter.getAnnotation(OptArg.class).value();
     }
 
     private boolean loadFlag() {

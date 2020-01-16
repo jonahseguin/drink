@@ -79,9 +79,20 @@ public class DrinkCommand {
             else {
                 if (provider.doesConsumeArgument()) {
                     if (parameter.isOptional()) {
-                        sb.append("[").append(provider.argumentDescription()).append(" = ").append(parameter.getDefaultOptionalValue()).append("]");
+                        sb.append("[").append(provider.argumentDescription());
+                        if (parameter.isText()) {
+                            sb.append("...");
+                        }
+                        if (parameter.getDefaultOptionalValue() != null && parameter.getDefaultOptionalValue().length() > 0) {
+                            sb.append(" = ").append(parameter.getDefaultOptionalValue());
+                        }
+                        sb.append("]");
                     } else {
-                        sb.append("<").append(provider.argumentDescription()).append(">");
+                        sb.append("<").append(provider.argumentDescription());
+                        if (parameter.isText()) {
+                            sb.append("...");
+                        }
+                        sb.append(">");
                     }
                     sb.append(" ");
                 }
