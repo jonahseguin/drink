@@ -77,7 +77,7 @@ public class ExampleCommand {
     
     @Command(name = "setlevel", desc = "Set your XP level.") // usage will be auto-generated to look like: [level = 1]
     @Require("example.setlevel")
-    public void setLevel(@Sender Player player, @Optional("1") int level) {
+    public void setLevel(@Sender Player player, @OptArg("1") int level) {
         player.setLevel(level);
     }
     
@@ -270,10 +270,10 @@ For example:
 Note that it is important that the argument with @Text must be the last parameter in your method, 
 otherwise your command will fail to register.
 
-### `@Optional`
+### `@OptArg`
 
-The `@Optional("<default value>")` annotation allows you to have an optional argument with an optional default value.
-The value provided in the `@Optional()` annotation will be passed to the provider for whatever the argument's type is.
+The `@OptArg("<default value>")` annotation allows you to have an optional argument with an optional default value.
+The value provided in the `@OptArg()` annotation will be passed to the provider for whatever the argument's type is.
 If nothing is provided, null is passed (or the `DrinkProvider`'s `#defaultNull()` method)
 Obviously if the command sender provides an argument that is applicable, that will be used.
 
@@ -282,7 +282,7 @@ For example:
 ```java
     @Command(name = "setlevel", desc = "Set your XP level.") // usage will be auto-generated to look like: [level = 1]
     @Require("example.setlevel")
-    public void setLevel(@Sender Player player, @Optional("1") int level) {
+    public void setLevel(@Sender Player player, @OptArg("1") int level) {
         player.setLevel(level);
     }
 ```
