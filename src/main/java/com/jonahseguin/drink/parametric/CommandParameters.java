@@ -25,4 +25,17 @@ public class CommandParameters {
         this.parameters = parameters;
         this.count = method.getParameterCount();
     }
+
+    public boolean isLastArgument(int index) {
+        if (index != parameters.length - 1) {
+            for (int i = index; i < parameters.length; i++) {
+                CommandParameter parameter = parameters[i];
+                if (!parameter.isFlag()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 }

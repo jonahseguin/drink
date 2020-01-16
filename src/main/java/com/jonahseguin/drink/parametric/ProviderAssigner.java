@@ -18,7 +18,7 @@ public class ProviderAssigner {
         DrinkProvider<?>[] providers = new DrinkProvider<?>[parameters.getParameters().length];
         for (int i = 0; i < parameters.getParameters().length; i++) {
             CommandParameter param = parameters.getParameters()[i];
-            if (param.isRequireLastArg() && i != parameters.getParameters().length - 1) {
+            if (param.isRequireLastArg() && !parameters.isLastArgument(i)) {
                 throw new CommandStructureException("Parameter " + param.getParameter().getName() + " [argument " + i + "] (" + param.getParameter().getType().getSimpleName() + ") in method '" + drinkCommand.getMethod().getName() + "' must be the last argument in the method.");
             }
             BindingContainer<?> bindings = commandService.getBindingsFor(param.getType());
