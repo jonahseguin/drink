@@ -40,22 +40,16 @@ public class DrinkHelpService {
     }
 
     public String getUsageMessage(DrinkCommandContainer container, DrinkCommand command) {
+        String usage = ChatColor.RED + "Command Usage: /" + container.getName() + " ";
+        if (command.getName().length() > 0) {
+            usage += command.getName() + " ";
+        }
         if (command.getUsage() != null && command.getUsage().length() > 0) {
-            String usage = ChatColor.RED + "Command Usage: /" + container.getName() + " ";
-            if (command.getName().length() > 0) {
-                usage += command.getName() + " ";
-            }
-            if (command.getUsage().length() > 0) {
-                usage += command.getUsage();
-            }
-            else {
-                usage += command.getGeneratedUsage();
-            }
-            return usage;
+            usage += command.getUsage();
+        } else {
+            usage += command.getGeneratedUsage();
         }
-        else {
-            return ChatColor.RED + "Not enough arguments.  Required: " + command.getConsumingArgCount();
-        }
+        return usage;
     }
 
 }

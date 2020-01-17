@@ -26,6 +26,7 @@ public class DrinkCommand {
     private final DrinkProvider<?>[] providers;
     private final DrinkProvider<?>[] consumingProviders;
     private final int consumingArgCount;
+    private final int requiredArgCount;
     private final boolean requiresAsync;
     private final String generatedUsage;
 
@@ -41,6 +42,7 @@ public class DrinkCommand {
         this.parameters = new CommandParameters(method);
         this.providers = commandService.getProviderAssigner().assignProvidersFor(this);
         this.consumingArgCount = calculateConsumingArgCount();
+        this.requiredArgCount = calculateRequiredArgCount();
         this.consumingProviders = calculateConsumingProviders();
         this.requiresAsync = calculateRequiresAsync();
         this.generatedUsage = generateUsage();
@@ -127,6 +129,20 @@ public class DrinkCommand {
         for (DrinkProvider<?> provider : providers) {
             if (provider.doesConsumeArgument()) {
                 count++;
+            }
+        }
+        return count;
+    }
+
+    private int calculateRequiredArgCount() {
+        int count = 0;
+        for (int i = 0; i < parameters.getParameters().length; i++) {
+            CommandParameter parameter = parameters.getParameters()[i];
+            if (!parameter.isFlag() && !parameter.isOptional()) {
+                DrinkProvider provider = providers[i];
+                if (provider.doesConsumeArgument()) {
+                    count++;
+                }
             }
         }
         return count;
