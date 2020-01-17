@@ -28,7 +28,7 @@ public class CommandParameters {
 
     public boolean isLastArgument(int index) {
         if (index != parameters.length - 1) {
-            for (int i = index; i < parameters.length; i++) {
+            for (int i = index + 1; i < parameters.length; i++) {
                 CommandParameter parameter = parameters[i];
                 if (!parameter.isFlag()) {
                     return false;

@@ -2,6 +2,7 @@ package com.jonahseguin.drink.command;
 
 import com.google.common.base.Preconditions;
 import com.jonahseguin.drink.CommandService;
+import com.jonahseguin.drink.annotation.Duration;
 import com.jonahseguin.drink.annotation.Sender;
 import com.jonahseguin.drink.annotation.Text;
 import com.jonahseguin.drink.argument.ArgumentParser;
@@ -76,6 +77,8 @@ public class DrinkCommandService implements CommandService {
         bind(long.class).toProvider(LongProvider.INSTANCE);
         bind(String.class).toProvider(StringProvider.INSTANCE);
         bind(String.class).annotatedWith(Text.class).toProvider(TextProvider.INSTANCE);
+        bind(Date.class).toProvider(DateProvider.INSTANCE);
+        bind(Date.class).annotatedWith(Duration.class).toProvider(DurationProvider.INSTANCE);
 
         bind(CommandArgs.class).toProvider(CommandArgsProvider.INSTANCE);
 
