@@ -100,4 +100,12 @@
         </dependency>
     </dependencies>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub jonahseguin Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/jonahseguin/drink</url>
+        </repository>
+    </distributionManagement>
+
 </project>
