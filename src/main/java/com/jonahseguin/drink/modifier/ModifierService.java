@@ -5,6 +5,7 @@ import com.jonahseguin.drink.annotation.Classifier;
 import com.jonahseguin.drink.annotation.Modifier;
 import com.jonahseguin.drink.command.CommandExecution;
 import com.jonahseguin.drink.command.DrinkCommandService;
+import com.jonahseguin.drink.exception.CommandExitMessage;
 import com.jonahseguin.drink.parametric.CommandParameter;
 
 import javax.annotation.Nonnull;
@@ -25,7 +26,7 @@ public class ModifierService {
     }
 
     @Nullable
-    public Object executeModifiers(@Nonnull CommandExecution execution, @Nonnull CommandParameter param, @Nullable Object parsedArgument) {
+    public Object executeModifiers(@Nonnull CommandExecution execution, @Nonnull CommandParameter param, @Nullable Object parsedArgument) throws CommandExitMessage {
         Preconditions.checkNotNull(execution, "CommandExecution cannot be null");
         Preconditions.checkNotNull(param, "CommandParameter cannot be null");
         for (Annotation annotation : param.getModifierAnnotations()) {
