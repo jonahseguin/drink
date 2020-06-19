@@ -2,7 +2,6 @@ package com.jonahseguin.drink.command;
 
 import com.google.common.base.Preconditions;
 import com.jonahseguin.drink.exception.CommandArgumentException;
-import org.apache.logging.log4j.util.Strings;
 
 import javax.annotation.Nonnull;
 import java.util.*;

@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.jonahseguin.drink.argument.CommandArg;
 import com.jonahseguin.drink.exception.CommandExitMessage;
 import com.jonahseguin.drink.parametric.DrinkProvider;
-import org.apache.logging.log4j.util.Strings;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
@@ -40,7 +40,7 @@ public class EnumProvider<T extends Enum<T>> extends DrinkProvider<T> {
                 return entry;
             }
         }
-        throw new CommandExitMessage("No matching value found for " + argumentDescription() + ".  Available values: " + Strings.join(getSuggestions(""), ' '));
+        throw new CommandExitMessage("No matching value found for " + argumentDescription() + ".  Available values: " + StringUtils.join(getSuggestions(""), ' '));
     }
 
     @Override
