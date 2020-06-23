@@ -1,7 +1,7 @@
 package com.jonahseguin.drink.command;
 
 import com.google.common.base.Preconditions;
-import org.apache.logging.log4j.util.Strings;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -101,7 +101,7 @@ public class DrinkCommandContainer extends Command implements PluginIdentifiable
     @Nullable
     public Map.Entry<DrinkCommand, String[]> getCommand(String[] args) {
         for (int i = (args.length - 1); i >= 0; i--) {
-            String key = commandService.getCommandKey(Strings.join(Arrays.asList(Arrays.copyOfRange(args, 0, i + 1)), ' '));
+            String key = commandService.getCommandKey(StringUtils.join(Arrays.asList(Arrays.copyOfRange(args, 0, i + 1)), ' '));
             DrinkCommand drinkCommand = getByKeyOrAlias(key);
             if (drinkCommand != null) {
                 return new AbstractMap.SimpleEntry<>(drinkCommand, Arrays.copyOfRange(args, i + 1, args.length));

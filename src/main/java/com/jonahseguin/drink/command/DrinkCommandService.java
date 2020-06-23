@@ -20,7 +20,7 @@ import com.jonahseguin.drink.provider.spigot.CommandSenderProvider;
 import com.jonahseguin.drink.provider.spigot.PlayerProvider;
 import com.jonahseguin.drink.provider.spigot.PlayerSenderProvider;
 import lombok.Getter;
-import org.apache.logging.log4j.util.Strings;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -170,7 +170,7 @@ public class DrinkCommandService implements CommandService {
                 command.getMethod().invoke(command.getHandler(), parsedArguments);
             } catch (IllegalAccessException | InvocationTargetException ex) {
                 sender.sendMessage(ChatColor.RED + "Could not perform command.  Notify an administrator");
-                throw new DrinkException("Failed to execute command '" + command.getName() + "' with arguments '" + Strings.join(Arrays.asList(args), ' ') + " for sender " + sender.getName(), ex);
+                throw new DrinkException("Failed to execute command '" + command.getName() + "' with arguments '" + StringUtils.join(Arrays.asList(args), ' ') + " for sender " + sender.getName(), ex);
             }
         }
         catch (CommandExitMessage ex) {
