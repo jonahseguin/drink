@@ -1,7 +1,7 @@
 name: drink
 main: com.jonahseguin.drink.Drink
 version: ${project.version}
-api-version: 1.12
+api-version: 1.13
 description: Dependency Injection-based Command Library
 author: Jonah Seguin (_onah)
 website: jonahseguin.com | github.com/jonahseguin/drink

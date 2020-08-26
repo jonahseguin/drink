@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,9 +19,7 @@ public class DrinkSpigotRegistry {
     public DrinkSpigotRegistry(DrinkCommandService commandService) {
         this.commandService = commandService;
         try {
-            Field field = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-            field.setAccessible(true);
-            commandMap = (CommandMap)field.get(Bukkit.getServer());
+            commandMap = (CommandMap) getPrivateField(Bukkit.getServer(), "commandMap", false);
         }
         catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
@@ -28,16 +27,26 @@ public class DrinkSpigotRegistry {
     }
 
     private Map<String, Command> getKnownCommands() throws NoSuchFieldException, IllegalAccessException {
-        Object map = getPrivateField(commandMap, "knownCommands");
+        Object map = getPrivateField(commandMap, "knownCommands", true);
         @SuppressWarnings("unchecked")
         HashMap<String, Command> knownCommands = (HashMap<String, Command>) map;
         return knownCommands;
     }
 
-    private Object getPrivateField(Object object, String field) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        final String v = Bukkit.getVersion();
+    private Object getPrivateField(Object object, String field, boolean fallback) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Class<?> clazz = object.getClass();
-        Field objectField = field.equals("commandMap") ? clazz.getDeclaredField(field) : field.equals("knownCommands") ? v.contains("1.13.1") ? clazz.getSuperclass().getDeclaredField(field) : clazz.getDeclaredField(field) : null;
+        Field objectField;
+
+        try {
+            objectField = clazz.getDeclaredField(field);
+        } catch (NoSuchFieldException e) {
+            if(fallback) {
+                objectField = clazz.getSuperclass().getDeclaredField(field);
+            } else {
+                throw new NoSuchFieldException(e.getMessage());
+            }
+        }
+
         objectField.setAccessible(true);
         Object result = objectField.get(object);
         objectField.setAccessible(false);
