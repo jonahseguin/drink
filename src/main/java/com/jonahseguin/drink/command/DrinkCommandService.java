@@ -177,7 +177,7 @@ public class DrinkCommandService implements CommandService {
             }
         }
         catch (CommandExitMessage ex) {
-            sender.sendMessage(ChatColor.RED + ex.getMessage());
+            ex.print(sender);
         } catch (CommandArgumentException ex) {
             sender.sendMessage(ChatColor.RED + ex.getMessage());
             helpService.sendUsageMessage(sender, getContainerFor(command), command);
