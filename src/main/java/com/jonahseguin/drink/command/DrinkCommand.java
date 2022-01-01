@@ -75,13 +75,14 @@ public class DrinkCommand {
         for (int i = 0; i < parameters.getParameters().length; i++) {
             CommandParameter parameter = parameters.getParameters()[i];
             DrinkProvider provider = providers[i];
+            String description = parameter.getParameter().getName(); // provider.argumentDescription()
             if (parameter.isFlag()) {
                 sb.append("-").append(parameter.getFlag().value()).append(" ");
             }
             else {
                 if (provider.doesConsumeArgument()) {
                     if (parameter.isOptional()) {
-                        sb.append("[").append(provider.argumentDescription());
+                        sb.append("[").append(description);
                         if (parameter.isText()) {
                             sb.append("...");
                         }
@@ -90,7 +91,7 @@ public class DrinkCommand {
                         }
                         sb.append("]");
                     } else {
-                        sb.append("<").append(provider.argumentDescription());
+                        sb.append("<").append(description);
                         if (parameter.isText()) {
                             sb.append("...");
                         }
