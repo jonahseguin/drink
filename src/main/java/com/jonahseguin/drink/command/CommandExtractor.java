@@ -50,6 +50,9 @@ public class CommandExtractor {
             if (method.isAnnotationPresent(Require.class)) {
                 Require require = method.getAnnotation(Require.class);
                 perm = require.value();
+            } else if (method.getDeclaringClass().isAnnotationPresent(Require.class)) {
+                Require require = method.getDeclaringClass().getAnnotation(Require.class);
+                perm = require.value() + (command.name().isEmpty() ? "" : ".") + command.name();
             }
             DrinkCommand drinkCommand = new DrinkCommand(
                     commandService, command.name(), Sets.newHashSet(command.aliases()), command.desc(), command.usage(),
