@@ -48,7 +48,7 @@ public class CommandSenderProvider extends DrinkProvider<CommandSender> {
     }
 
     @Override
-    public List<String> getSuggestions(@Nonnull String prefix) {
+    public List<String> getSuggestions(CommandSender sender, @Nonnull String prefix) {
         return Collections.emptyList();
     }
 }

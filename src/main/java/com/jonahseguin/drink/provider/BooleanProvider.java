@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.jonahseguin.drink.argument.CommandArg;
 import com.jonahseguin.drink.exception.CommandExitMessage;
 import com.jonahseguin.drink.parametric.DrinkProvider;
+import org.bukkit.command.CommandSender;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,7 +61,7 @@ public class BooleanProvider extends DrinkProvider<Boolean> {
     }
 
     @Override
-    public List<String> getSuggestions(@Nonnull String prefix) {
+    public List<String> getSuggestions(CommandSender sender, @Nonnull String prefix) {
         prefix = prefix.toLowerCase();
         if (prefix.length() == 0) {
             return SUGGEST;

@@ -5,6 +5,7 @@ import com.jonahseguin.drink.argument.CommandArg;
 import com.jonahseguin.drink.exception.CommandExitMessage;
 import com.jonahseguin.drink.parametric.DrinkProvider;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.command.CommandSender;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
@@ -40,7 +41,7 @@ public class EnumProvider<T extends Enum<T>> extends DrinkProvider<T> {
                 return entry;
             }
         }
-        throw new CommandExitMessage("No matching value found for " + argumentDescription() + ".  Available values: " + StringUtils.join(getSuggestions(""), ' '));
+        throw new CommandExitMessage("No matching value found for " + argumentDescription() + ".  Available values: " + StringUtils.join(getSuggestions(arg.getSender(),""), ' '));
     }
 
     @Override
@@ -49,7 +50,7 @@ public class EnumProvider<T extends Enum<T>> extends DrinkProvider<T> {
     }
 
     @Override
-    public List<String> getSuggestions(@Nonnull String prefix) {
+    public List<String> getSuggestions(CommandSender sender, @Nonnull String prefix) {
         List<String> suggestions = Lists.newArrayList();
         String test = simplify(prefix);
 
