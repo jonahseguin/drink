@@ -17,11 +17,13 @@ public class ProviderAssigner {
         CommandParameters parameters = drinkCommand.getParameters();
         DrinkProvider<?>[] providers = new DrinkProvider<?>[parameters.getParameters().length];
         for (int i = 0; i < parameters.getParameters().length; i++) {
-            CommandParameter param = parameters.getParameters()[i];
+
+			CommandParameter param = parameters.getParameters()[i];
             if (param.isRequireLastArg() && !parameters.isLastArgument(i)) {
                 throw new CommandStructureException("Parameter " + param.getParameter().getName() + " [argument " + i + "] (" + param.getParameter().getType().getSimpleName() + ") in method '" + drinkCommand.getMethod().getName() + "' must be the last argument in the method.");
             }
-            BindingContainer<?> bindings = commandService.getBindingsFor(param.getType());
+
+			BindingContainer<?> bindings = commandService.getBindingsFor(param.getType());
             if (bindings != null) {
                 DrinkProvider<?> provider = null;
                 for (DrinkBinding<?> binding : bindings.getBindings()) {
