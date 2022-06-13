@@ -30,7 +30,7 @@ public class DrinkCommand {
     private final boolean requiresAsync;
     private final String generatedUsage;
 
-    public DrinkCommand(DrinkCommandService commandService, String name, Set<String> aliases, String description, String usage, String permission, Object handler, Method method) throws MissingProviderException, CommandStructureException {
+    public DrinkCommand(DrinkCommandService commandService, String name, Set<String> aliases, String description, String usage, boolean async, String permission, Object handler, Method method) throws MissingProviderException, CommandStructureException {
         this.commandService = commandService;
         this.name = name;
         this.aliases = aliases;
@@ -44,7 +44,7 @@ public class DrinkCommand {
         this.consumingArgCount = calculateConsumingArgCount();
         this.requiredArgCount = calculateRequiredArgCount();
         this.consumingProviders = calculateConsumingProviders();
-        this.requiresAsync = calculateRequiresAsync();
+        this.requiresAsync = async || calculateRequiresAsync();
         this.generatedUsage = generateUsage();
         this.allAliases = aliases;
         if (name.length() > 0 && !name.equals(DrinkCommandService.DEFAULT_KEY)) {

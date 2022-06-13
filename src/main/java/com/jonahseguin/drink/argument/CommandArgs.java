@@ -47,6 +47,16 @@ public class CommandArgs {
         }
     }
 
+	public void skip() {
+		lock.lock();
+		try {
+			index--;
+		}
+		finally {
+			lock.unlock();
+		}
+	}
+
     public String next() {
         lock.lock();
         try {
