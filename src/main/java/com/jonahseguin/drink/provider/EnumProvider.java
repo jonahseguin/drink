@@ -50,7 +50,7 @@ public class EnumProvider<T extends Enum<T>> extends DrinkProvider<T> {
     }
 
     @Override
-    public List<String> getSuggestions(CommandSender sender, @Nonnull String prefix) {
+    public List<String> getSuggestions(@Nonnull String prefix) {
         List<String> suggestions = Lists.newArrayList();
         String test = simplify(prefix);
 

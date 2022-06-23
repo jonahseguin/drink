@@ -47,7 +47,7 @@ public class DateProvider extends DrinkProvider<Date> {
     }
 
     @Override
-    public List<String> getSuggestions(CommandSender sender, @Nonnull String prefix) {
+    public List<String> getSuggestions(@Nonnull String prefix) {
         Calendar calendar = Calendar.getInstance();
         return Collections.singletonList(String.format("%d-%02d-%02d@%02d:%02d", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)));
     }

@@ -40,8 +40,4 @@ public class ConsoleCommandSenderProvider extends DrinkProvider<ConsoleCommandSe
         return "console sender";
     }
 
-    @Override
-    public List<String> getSuggestions(CommandSender sender, @Nonnull String prefix) {
-        return Collections.emptyList();
-    }
 }

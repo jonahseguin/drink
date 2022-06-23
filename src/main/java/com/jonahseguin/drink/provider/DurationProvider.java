@@ -47,11 +47,6 @@ public class DurationProvider extends DrinkProvider<Date> {
         return "duration";
     }
 
-    @Override
-    public List<String> getSuggestions(CommandSender sender, @Nonnull String prefix) {
-        return Collections.emptyList();
-    }
-
     public static long smartParseDuration(String s) {
         if (s.contains(":")) {
             String[] parts = s.split(":");

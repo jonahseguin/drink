@@ -61,7 +61,7 @@ public class BooleanProvider extends DrinkProvider<Boolean> {
     }
 
     @Override
-    public List<String> getSuggestions(CommandSender sender, @Nonnull String prefix) {
+    public List<String> getSuggestions(@Nonnull String prefix) {
         prefix = prefix.toLowerCase();
         if (prefix.length() == 0) {
             return SUGGEST;

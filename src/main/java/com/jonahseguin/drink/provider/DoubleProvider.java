@@ -51,9 +51,4 @@ public class DoubleProvider extends DrinkProvider<Double> {
     public String argumentDescription() {
         return "decimal number";
     }
-
-    @Override
-    public List<String> getSuggestions(CommandSender sender, @Nonnull String prefix) {
-        return Collections.emptyList();
-    }
 }

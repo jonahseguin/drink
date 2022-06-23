@@ -53,8 +53,4 @@ public class IntegerProvider extends DrinkProvider<Integer> {
         return "integer";
     }
 
-    @Override
-    public List<String> getSuggestions(CommandSender sender, @Nonnull String prefix) {
-        return Collections.emptyList();
-    }
 }

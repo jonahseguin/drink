@@ -40,8 +40,4 @@ public class PlayerSenderProvider extends DrinkProvider<Player> {
         return "player sender";
     }
 
-    @Override
-    public List<String> getSuggestions(CommandSender sender, @Nonnull String prefix) {
-        return Collections.emptyList();
-    }
 }

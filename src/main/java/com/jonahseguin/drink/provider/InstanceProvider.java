@@ -38,8 +38,4 @@ public class InstanceProvider<T> extends DrinkProvider<T> {
         return instance.getClass().getSimpleName() + " (provided)";
     }
 
-    @Override
-    public List<String> getSuggestions(CommandSender sender, @Nonnull String prefix) {
-        return Collections.emptyList();
-    }
 }

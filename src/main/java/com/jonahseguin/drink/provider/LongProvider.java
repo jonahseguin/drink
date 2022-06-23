@@ -52,8 +52,4 @@ public class LongProvider extends DrinkProvider<Long> {
         return "long number";
     }
 
-    @Override
-    public List<String> getSuggestions(CommandSender sender, @Nonnull String prefix) {
-        return Collections.emptyList();
-    }
 }

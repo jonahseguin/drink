@@ -37,8 +37,4 @@ public class CommandArgsProvider extends DrinkProvider<CommandArgs> {
         return "args";
     }
 
-    @Override
-    public List<String> getSuggestions(CommandSender sender, @Nonnull String prefix) {
-        return Collections.emptyList();
-    }
 }
