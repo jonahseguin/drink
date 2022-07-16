@@ -21,7 +21,7 @@ Add this to your `pom.xml` `<dependencies>`:
 <dependency>
   <groupId>com.jonahseguin</groupId>
   <artifactId>drink</artifactId>
-  <version>1.0.3</version> <!-- At time of writing, 1.0.3 is latest version.  See the pom.xml for the latest version -->
+  <version>1.0.4</version> <!-- At time of writing, 1.0.4 is latest version.  See the pom.xml for the latest version -->
   <scope>compile</scope> <!-- Change scope to 'provided' if you are running drink as a plugin rather than shading it -->
 </dependency>
 ```
