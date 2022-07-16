@@ -3,6 +3,7 @@ package com.jonahseguin.drink.provider.spigot;
 import com.jonahseguin.drink.argument.CommandArg;
 import com.jonahseguin.drink.exception.CommandExitMessage;
 import com.jonahseguin.drink.parametric.DrinkProvider;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
 import javax.annotation.Nonnull;
@@ -39,8 +40,4 @@ public class ConsoleCommandSenderProvider extends DrinkProvider<ConsoleCommandSe
         return "console sender";
     }
 
-    @Override
-    public List<String> getSuggestions(@Nonnull String prefix) {
-        return Collections.emptyList();
-    }
 }

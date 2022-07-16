@@ -3,6 +3,7 @@ package com.jonahseguin.drink.provider;
 import com.jonahseguin.drink.argument.CommandArg;
 import com.jonahseguin.drink.exception.CommandExitMessage;
 import com.jonahseguin.drink.parametric.DrinkProvider;
+import org.bukkit.command.CommandSender;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,11 +45,6 @@ public class DurationProvider extends DrinkProvider<Date> {
     @Override
     public String argumentDescription() {
         return "duration";
-    }
-
-    @Override
-    public List<String> getSuggestions(@Nonnull String prefix) {
-        return Collections.emptyList();
     }
 
     public static long smartParseDuration(String s) {
