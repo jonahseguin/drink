@@ -4,6 +4,7 @@ import com.jonahseguin.drink.argument.CommandArg;
 import com.jonahseguin.drink.argument.CommandArgs;
 import com.jonahseguin.drink.exception.CommandExitMessage;
 import com.jonahseguin.drink.parametric.DrinkProvider;
+import org.bukkit.command.CommandSender;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,8 +37,4 @@ public class CommandArgsProvider extends DrinkProvider<CommandArgs> {
         return "args";
     }
 
-    @Override
-    public List<String> getSuggestions(@Nonnull String prefix) {
-        return Collections.emptyList();
-    }
 }

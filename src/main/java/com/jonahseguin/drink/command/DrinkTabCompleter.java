@@ -32,7 +32,7 @@ public class DrinkTabCompleter implements TabCompleter {
                 }
                 DrinkCommand drinkCommand = data.getKey();
                 if (drinkCommand.getConsumingProviders().length > tabCompletingIndex) {
-                    List<String> s = drinkCommand.getConsumingProviders()[tabCompletingIndex].getSuggestions(tabCompleting);
+                    List<String> s = drinkCommand.getConsumingProviders()[tabCompletingIndex].getSuggestions(sender, tabCompleting);
                     if (s != null) {
                         List<String> suggestions = new ArrayList<>(s);
                         if (args.length == 0 || args.length == 1) {

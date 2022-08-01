@@ -3,6 +3,7 @@ package com.jonahseguin.drink.provider;
 import com.jonahseguin.drink.argument.CommandArg;
 import com.jonahseguin.drink.exception.CommandExitMessage;
 import com.jonahseguin.drink.parametric.DrinkProvider;
+import org.bukkit.command.CommandSender;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
@@ -37,8 +38,4 @@ public class InstanceProvider<T> extends DrinkProvider<T> {
         return instance.getClass().getSimpleName() + " (provided)";
     }
 
-    @Override
-    public List<String> getSuggestions(@Nonnull String prefix) {
-        return Collections.emptyList();
-    }
 }
