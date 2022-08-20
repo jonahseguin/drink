@@ -17,4 +17,5 @@ public @interface Command {
 
     String usage() default "";
 
+	boolean async() default false;
 }

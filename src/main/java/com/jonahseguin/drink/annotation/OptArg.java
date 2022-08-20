@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-@LastArg
 public @interface OptArg {
 
     String value() default "";

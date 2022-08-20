@@ -21,6 +21,11 @@ public class TextProvider extends DrinkProvider<String> {
     }
 
     @Override
+    public boolean allowNullArgument() {
+        return false;
+    }
+
+    @Override
     public boolean isAsync() {
         return false;
     }

@@ -61,59 +61,91 @@ public class ArgumentParser {
 
     @Nonnull
     public Object[] parseArguments(@Nonnull CommandExecution execution, @Nonnull DrinkCommand command, @Nonnull CommandArgs args) throws CommandExitMessage, CommandArgumentException {
+
         Preconditions.checkNotNull(command, "DrinkCommand cannot be null");
         Preconditions.checkNotNull(args, "CommandArgs cannot be null");
+
         Object[] arguments = new Object[command.getMethod().getParameterCount()];
+
         for (int i = 0; i < command.getParameters().getParameters().length; i++) {
-            CommandParameter param = command.getParameters().getParameters()[i];
-            boolean skipOptional = false; // dont complete exceptionally if true if the arg is missing
+
+            CommandParameter parameter = command.getParameters().getParameters()[i];
             DrinkProvider<?> provider = command.getProviders()[i];
             String value = null;
 
-            if (param.isFlag()) {
-                Flag flag = param.getFlag();
+            if (parameter.isFlag()) {
+
+                Flag flag = parameter.getFlag();
                 CommandFlag commandFlag = args.getFlags().get(flag.value());
-                if (commandFlag != null) {
-                    value = commandFlag.getValue();
-                } else {
-                    value = null;
+                value = commandFlag != null ? commandFlag.getValue() : null;
+
+                if (parameter.isFlag() && value == null
+                        && !parameter.getType().isAssignableFrom(Boolean.class)
+                        && !parameter.getType().isAssignableFrom(boolean.class)
+                        && !provider.allowNullArgument()) {
+
+                    arguments[i] = provider.defaultNullValue();
+                    continue;
                 }
-            } else {
-                if (!args.hasNext()) {
-                    if (provider.doesConsumeArgument()) {
-                        if (param.isOptional()) {
-                            String defaultValue = param.getDefaultOptionalValue();
-                            if (defaultValue != null && defaultValue.length() > 0) {
-                                value = defaultValue;
-                            } else {
-                                skipOptional = true;
-                            }
-                        } else {
-                            throw new CommandArgumentException("Missing argument for: " + provider.argumentDescription());
-                        }
-                    }
-                }
-                if (provider.doesConsumeArgument() && value == null && args.hasNext()) {
+
+                Object o = provider.provide(new CommandArg(args.getSender(), value, args), parameter.getAllAnnotations());
+                o = commandService.getModifierService().executeModifiers(execution, parameter, o);
+                arguments[i] = o;
+                continue;
+            }
+
+            if (parameter.isOptional() && provider.doesConsumeArgument()) {
+
+                if (args.hasNext()) {
                     value = args.next();
                 }
-                if (provider.doesConsumeArgument() && value == null && !skipOptional) {
+
+                if (value == null && !provider.allowNullArgument()) {
+
+                    value = parameter.getDefaultOptionalValue();
+
+                    Object o = provider.provide(new CommandArg(args.getSender(), value, args), parameter.getAllAnnotations());
+                    o = commandService.getModifierService().executeModifiers(execution, parameter, o);
+                    arguments[i] = o;
+                    continue;
+                }
+
+                try {
+
+                    Object o = provider.provide(new CommandArg(args.getSender(), value, args), parameter.getAllAnnotations());
+                    o = commandService.getModifierService().executeModifiers(execution, parameter, o);
+                    arguments[i] = o;
+
+                } catch (CommandExitMessage ex) {
+
+                    value = parameter.getDefaultOptionalValue();
+
+                    Object o = provider.provide(new CommandArg(args.getSender(), value, args), parameter.getAllAnnotations());
+                    o = commandService.getModifierService().executeModifiers(execution, parameter, o);
+                    arguments[i] = o;
+
+                    args.skip();
+                }
+
+                continue;
+            }
+
+            if (provider.doesConsumeArgument()) {
+
+                if (!args.hasNext()) {
+                    throw new CommandArgumentException("Missing argument for: " + provider.argumentDescription());
+                }
+
+                value = args.next();
+
+                if (value == null && !provider.allowNullArgument()) {
                     throw new CommandArgumentException("Argument already consumed for next argument: " + provider.argumentDescription() + " (this is a provider error!)");
                 }
             }
 
-            if (param.isFlag() && !param.getType().isAssignableFrom(Boolean.class) && !param.getType().isAssignableFrom(boolean.class)
-                    && value == null && !provider.allowNullArgument()) {
-                arguments[i] = provider.defaultNullValue();
-            }
-            else {
-                if (!skipOptional) {
-                    Object o = provider.provide(new CommandArg(args.getSender(), value, args), param.getAllAnnotations());
-                    o = commandService.getModifierService().executeModifiers(execution, param, o);
-                    arguments[i] = o;
-                } else {
-                    arguments[i] = null;
-                }
-            }
+            Object o = provider.provide(new CommandArg(args.getSender(), value, args), parameter.getAllAnnotations());
+            o = commandService.getModifierService().executeModifiers(execution, parameter, o);
+            arguments[i] = o;
         }
         return arguments;
     }
