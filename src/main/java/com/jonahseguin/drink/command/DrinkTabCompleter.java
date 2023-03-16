@@ -74,6 +74,7 @@ public class DrinkTabCompleter implements TabCompleter {
                 }
             }
         }
+
         return Collections.emptyList();
     }
 }

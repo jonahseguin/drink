@@ -1,6 +1,7 @@
 package com.jonahseguin.drink.command;
 
 import com.google.common.base.Preconditions;
+import com.jonahseguin.drink.annotation.HideCommand;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -51,10 +52,12 @@ public class DrinkCommandContainer extends Command implements PluginIdentifiable
         final String p = prefix.toLowerCase();
         List<String> suggestions = new ArrayList<>();
         for (DrinkCommand c : commands.values()) {
-            for (String alias : c.getAllAliases()) {
-                if (alias.length() > 0) {
-                    if (p.length() == 0 || alias.toLowerCase().startsWith(p)) {
-                        suggestions.add(alias);
+            if (!c.getMethod().isAnnotationPresent(HideCommand.class)) {
+                for (String alias : c.getAllAliases()) {
+                    if (alias.length() > 0) {
+                        if (p.length() == 0 || alias.toLowerCase().startsWith(p)) {
+                            suggestions.add(alias);
+                        }
                     }
                 }
             }
